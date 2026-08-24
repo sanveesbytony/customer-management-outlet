@@ -1,0 +1,54 @@
+[
+  {
+    "invoiceNo": "INV-2026-201",
+    "date": "2026-08-20",
+    "customerName": "Shahriar Hossain",
+    "phone": "01712345678",
+    "customerId": "CUST-2001",
+    "branch": "Main Branch",
+    "totalAmount": 7500,
+    "discount": 500,
+    "netAmount": 7000,
+    "paymentMode": "Credit Card",
+    "items": "Linen Casual Blazer + Cotton Shirt"
+  },
+  {
+    "invoiceNo": "INV-2026-202",
+    "date": "2026-08-20",
+    "customerName": "Tania Sultana",
+    "phone": "01823456789",
+    "customerId": "CUST-2002",
+    "branch": "Gulshan Outlet",
+    "totalAmount": 16000,
+    "discount": 1000,
+    "netAmount": 15000,
+    "paymentMode": "bKash",
+    "items": "Designer Wedding Saree"
+  },
+  {
+    "invoiceNo": "INV-2026-203",
+    "date": "2026-08-19",
+    "customerName": "Kamrul Hasan",
+    "phone": "01934567890",
+    "customerId": "CUST-2003",
+    "branch": "Dhanmondi Outlet",
+    "totalAmount": 4500,
+    "discount": 0,
+    "netAmount": 4500,
+    "paymentMode": "Cash",
+    "items": "Denim Slim Jeans + Polo"
+  },
+  {
+    "invoiceNo": "INV-2026-204",
+    "date": "2026-08-18",
+    "customerName": "Shahriar Hossain",
+    "phone": "01712345678",
+    "customerId": "CUST-2001",
+    "branch": "Main Branch",
+    "totalAmount": 8200,
+    "discount": 200,
+    "netAmount": 8000,
+    "paymentMode": "Credit Card",
+    "items": "Premium Panjabi"
+  }
+]

@@ -1,0 +1,2123 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POS2IN Customer Intelligence Portal</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js for Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Firebase App, Realtime Database & Firestore SDKs (v10 Compat for instant direct-browser cloud sync) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+              950: '#1e1b4b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+  <!-- ================= AUTHENTICATION / LOGIN SCREEN (MODAL BARRIER) ================= -->
+  <div id="login-screen"
+    class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-xl overflow-y-auto">
+    <div
+      class="glass-panel max-w-md w-full p-6 sm:p-8 rounded-3xl shadow-2xl space-y-6 relative border border-slate-200 dark:border-white/15 my-auto animate-fade-in">
+
+      <!-- Header / Logo -->
+      <div class="text-center space-y-2">
+        <div
+          class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-brand-500/25 text-white">
+          <svg class="svg-icon w-7 h-7 text-white" viewBox="0 0 24 24">
+            <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" />
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+            <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" />
+            <path d="M2 7h20" />
+            <path
+              d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7" />
+          </svg>
+        </div>
+        <h2 class="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight">POS2IN Portal Login</h2>
+        <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Select your branch or login with Admin
+          privileges</p>
+      </div>
+
+      <!-- Mode Selector Tabs -->
+      <div
+        class="grid grid-cols-2 p-1 bg-slate-100 dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-white/10 gap-1">
+        <button type="button" onclick="switchLoginMode('branch')" id="tab-login-branch"
+          class="py-2.5 rounded-xl text-xs font-bold transition-all bg-brand-600 text-white shadow flex items-center justify-center gap-1.5 cursor-pointer select-none">
+          <svg class="svg-icon w-4 h-4 pointer-events-none" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M19 21v-4"/><path d="M19 17a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v4"/><path d="M9 10h1"/><path d="M14 10h1"/><path d="M9 14h1"/><path d="M14 14h1"/><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg>
+          <span class="pointer-events-none">Branch Login</span>
+        </button>
+        <button type="button" onclick="switchLoginMode('admin')" id="tab-login-admin"
+          class="py-2.5 rounded-xl text-xs font-bold transition-all text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center justify-center gap-1.5 cursor-pointer select-none">
+          <svg class="svg-icon w-4 h-4 pointer-events-none" viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5 1 6.5L12 17l-5.5 3 1-6.5L3 9l6-1z"/></svg>
+          <span class="pointer-events-none">Admin Login</span>
+        </button>
+      </div>
+
+      <!-- Mode 1: Branch Login Form -->
+      <form id="branch-login-form" onsubmit="event.preventDefault(); handleBranchLoginSubmit();" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">Select
+            Store / Branch</label>
+          <div class="relative">
+            <select id="login-branch-select" onchange="onLoginBranchChanged()"
+              class="glass-input w-full py-2.5 pl-10 pr-10 rounded-xl text-xs font-bold appearance-none cursor-pointer text-gray-900 dark:text-white bg-white dark:bg-[#0d1424]">
+              <option value="Main Branch" class="bg-slate-900 text-white">Main Branch</option>
+              <option value="Dhanmondi Outlet" class="bg-slate-900 text-white">Dhanmondi Outlet</option>
+              <option value="Gulshan Outlet" class="bg-slate-900 text-white">Gulshan Outlet</option>
+              <option value="Uttara Outlet" class="bg-slate-900 text-white">Uttara Outlet</option>
+              <option value="Online Store" class="bg-slate-900 text-white">Online Store</option>
+            </select>
+            <svg class="svg-icon w-4 h-4 text-brand-500 absolute left-3.5 top-3.5 pointer-events-none"
+              viewBox="0 0 24 24">
+              <line x1="6" x2="6" y1="3" y2="15" />
+              <circle cx="18" cy="6" r="3" />
+              <circle cx="6" cy="18" r="3" />
+              <path d="M18 9a9 9 0 0 1-9 9" />
+            </svg>
+            <svg class="svg-icon w-4 h-4 text-gray-400 absolute right-3.5 top-3.5 pointer-events-none" viewBox="0 0 24 24">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Lockout / Blocked Warning Banner -->
+        <div id="login-branch-blocked-banner"
+          class="hidden p-3.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-bold space-y-1 animate-fade-in">
+          <div class="flex items-center gap-1.5">
+            <svg class="svg-icon w-4 h-4 text-rose-500" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg>
+            <span>Branch Access Blocked</span>
+          </div>
+          <p class="text-[11px] font-normal text-rose-500/90 dark:text-rose-300">This branch has been blocked due to 5
+            consecutive failed login attempts. Please contact Administrator to unblock your branch.</p>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Branch
+              Password</label>
+            <span id="login-attempts-remaining" class="text-[11px] text-amber-500 font-semibold hidden"></span>
+          </div>
+          <div class="relative">
+            <input type="password" id="login-branch-password" placeholder="Enter branch password..."
+              class="glass-input w-full py-2.5 pl-10 pr-10 rounded-xl text-xs font-medium placeholder-gray-400">
+            <svg class="svg-icon w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" viewBox="0 0 24 24">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <button type="button" onclick="togglePasswordVisibility('login-branch-password', 'eye-branch-icon')"
+              class="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-white p-0.5"
+              title="Show/Hide Password">
+              <svg id="eye-branch-icon" class="svg-icon w-4 h-4" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="btn-branch-login-submit"
+          class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold text-xs shadow-lg shadow-brand-500/25 transition-all flex items-center justify-center gap-2">
+          <span>Log In to Portal</span>
+          <svg class="svg-icon w-4 h-4" viewBox="0 0 24 24">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      </form>
+
+      <!-- Mode 2: Admin Login Form (Specific Credentials) -->
+      <form id="admin-login-form" onsubmit="event.preventDefault(); handleAdminLoginSubmit();" class="hidden space-y-4">
+
+        <div class="p-3.5 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-500/30 text-xs text-indigo-900 dark:text-indigo-200 space-y-1">
+          <div class="flex items-center gap-2 font-bold text-brand-600 dark:text-indigo-400">
+            <svg class="svg-icon w-4 h-4 text-indigo-500" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>Super Administrator Authentication</span>
+          </div>
+          <p class="text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed">
+            Enter your specific administrator username / email and password to access the full portal.
+          </p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">Admin Username / Email</label>
+          <div class="relative">
+            <input type="text" id="login-admin-username" placeholder="e.g. admin or admin@pos2in.com" value="admin" autocomplete="username"
+              class="glass-input w-full py-2.5 pl-10 pr-4 rounded-xl text-xs font-bold placeholder-gray-400 text-gray-900 dark:text-white">
+            <svg class="svg-icon w-4 h-4 text-purple-500 absolute left-3.5 top-3.5" viewBox="0 0 24 24">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Admin Password</label>
+          </div>
+          <div class="relative">
+            <input type="password" id="login-admin-password" placeholder="Enter admin password..." autocomplete="current-password"
+              class="glass-input w-full py-2.5 pl-10 pr-10 rounded-xl text-xs font-mono font-bold placeholder-gray-400 text-gray-900 dark:text-white">
+            <svg class="svg-icon w-4 h-4 text-purple-500 absolute left-3.5 top-3.5" viewBox="0 0 24 24">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <button type="button" onclick="togglePasswordVisibility('login-admin-password', 'eye-admin-icon')"
+              class="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-white p-0.5"
+              title="Show/Hide Password">
+              <svg id="eye-admin-icon" class="svg-icon w-4 h-4" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400 px-1">
+          <span>Default: <span class="font-mono font-bold text-purple-600 dark:text-purple-300">admin</span> / <span class="font-mono font-bold text-purple-600 dark:text-purple-300">pos2in@admin2026</span></span>
+        </div>
+
+        <button type="submit" id="btn-admin-login-submit"
+          class="w-full py-3 bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 hover:opacity-95 text-white rounded-xl font-bold text-xs shadow-lg shadow-purple-500/25 transition-all flex items-center justify-center gap-2">
+          <span>Verify & Log In as Admin</span>
+          <svg class="svg-icon w-4 h-4" viewBox="0 0 24 24">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ================= TOP NAVIGATION BAR (ULTRA-RESPONSIVE) ================= -->
+  <header
+    class="sticky top-0 z-50 w-full bg-white/95 dark:bg-[#090d16]/95 backdrop-blur-md border-b dark:border-white/10 border-slate-200 shadow-sm">
+    <div class="max-w-7xl 2xl:max-w-[1700px] w-full mx-auto px-3 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-14 sm:h-16 gap-2 sm:gap-4">
+
+        <!-- Brand / Logo -->
+        <div class="flex items-center gap-2.5 sm:gap-3 cursor-pointer flex-shrink-0" onclick="switchTab('dashboard')">
+          <div
+            class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-purple-600 flex items-center justify-center shadow-md shadow-brand-500/20 text-white font-extrabold text-base sm:text-lg flex-shrink-0">
+            <svg class="svg-icon w-4 h-4 sm:w-5 sm:h-5 text-white" viewBox="0 0 24 24">
+              <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" />
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+              <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" />
+              <path d="M2 7h20" />
+              <path
+                d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7" />
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5 sm:gap-2">
+              <span
+                class="font-extrabold text-base sm:text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-indigo-600 dark:from-white dark:to-indigo-200 whitespace-nowrap">POS2IN
+                Portal</span>
+              <span
+                class="text-[9px] sm:text-[10px] uppercase px-1.5 sm:px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-300 font-bold border border-brand-500/20 whitespace-nowrap">Analytics</span>
+            </div>
+            <p class="text-[10px] sm:text-[11px] text-gray-500 dark:text-gray-400 whitespace-nowrap hidden md:block">
+              Customer Intelligence & Fast JSON Store</p>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs (Desktop) -->
+        <nav
+          class="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-slate-900/80 p-1 rounded-xl border border-slate-200 dark:border-white/10 flex-shrink-0">
+          <button onclick="switchTab('dashboard')" id="nav-dashboard"
+            class="nav-tab whitespace-nowrap flex-shrink-0 px-3 py-1.5 lg:px-3.5 lg:py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all bg-brand-600 text-white shadow-sm">
+            <svg class="svg-icon w-3.5 h-3.5" viewBox="0 0 24 24">
+              <rect width="7" height="9" x="3" y="3" rx="1" />
+              <rect width="7" height="5" x="14" y="3" rx="1" />
+              <rect width="7" height="9" x="14" y="12" rx="1" />
+              <rect width="7" height="5" x="3" y="16" rx="1" />
+            </svg> Dashboard
+          </button>
+          <button onclick="switchTab('customers')" id="nav-customers"
+            class="nav-tab whitespace-nowrap flex-shrink-0 px-3 py-1.5 lg:px-3.5 lg:py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all text-gray-600 dark:text-gray-400 hover:text-brand-600 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5">
+            <svg class="svg-icon w-3.5 h-3.5" viewBox="0 0 24 24">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            <span>Customers</span>
+            <span id="tab-cust-count"
+              class="px-1.5 py-0.5 rounded-full text-[10px] font-mono bg-slate-200 dark:bg-white/10 text-gray-700 dark:text-gray-300 font-bold leading-none">0</span>
+          </button>
+          <button onclick="switchTab('import')" id="nav-import"
+            class="nav-tab whitespace-nowrap flex-shrink-0 px-3 py-1.5 lg:px-3.5 lg:py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all text-gray-600 dark:text-gray-400 hover:text-brand-600 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5">
+            <svg class="svg-icon w-3.5 h-3.5" viewBox="0 0 24 24">
+              <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+              <path d="M12 12v9" />
+              <path d="m16 16-4-4-4 4" />
+            </svg> Import POS2IN
+          </button>
+          <button onclick="switchTab('branches')" id="nav-branches"
+            class="nav-tab whitespace-nowrap flex-shrink-0 px-3 py-1.5 lg:px-3.5 lg:py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all text-gray-600 dark:text-gray-400 hover:text-brand-600 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5">
+            <svg class="svg-icon w-3.5 h-3.5" viewBox="0 0 24 24">
+              <line x1="6" x2="6" y1="3" y2="15" />
+              <circle cx="18" cy="6" r="3" />
+              <circle cx="6" cy="18" r="3" />
+              <path d="M18 9a9 9 0 0 1-9 9" />
+            </svg> Branches
+          </button>
+          <button onclick="switchTab('delete')" id="nav-delete"
+            class="nav-tab whitespace-nowrap flex-shrink-0 px-3 py-1.5 lg:px-3.5 lg:py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all text-rose-600 dark:text-rose-400 hover:bg-rose-500/10">
+            <svg class="svg-icon w-3.5 h-3.5" viewBox="0 0 24 24">
+              <path d="M3 6h18" />
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+              <line x1="10" x2="10" y1="11" y2="17" />
+              <line x1="14" x2="14" y1="11" y2="17" />
+            </svg> Delete Data
+          </button>
+          <button onclick="switchTab('settings')" id="nav-settings"
+            class="nav-tab whitespace-nowrap flex-shrink-0 px-3 py-1.5 lg:px-3.5 lg:py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all text-gray-600 dark:text-gray-400 hover:text-brand-600 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5">
+            <svg class="svg-icon w-3.5 h-3.5" viewBox="0 0 24 24">
+              <path
+                d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg> Settings
+          </button>
+        </nav>
+
+        <!-- Right Side Actions: Auth Badge + Logout + Dark/Light + Sync + Refresh -->
+        <div class="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
+
+          <!-- User Role / Branch Badge -->
+          <div id="header-auth-badge"
+            class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/10 border border-slate-300 dark:border-white/10 text-xs font-bold text-gray-800 dark:text-white whitespace-nowrap flex-shrink-0">
+            <span id="header-auth-role-icon" class="flex items-center"><svg class="svg-icon w-3.5 h-3.5" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M19 21v-4"/><path d="M19 17a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v4"/><path d="M9 10h1"/><path d="M14 10h1"/><path d="M9 14h1"/><path d="M14 14h1"/><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg></span>
+            <span id="header-auth-name" class="max-w-[100px] sm:max-w-[140px] truncate">Main Branch</span>
+          </div>
+
+          <!-- Log Out Button -->
+          <button onclick="handleLogout()" id="header-logout-btn"
+            class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 shadow-sm"
+            title="Log Out of Portal">
+            <svg class="svg-icon w-3.5 h-3.5 text-rose-500" viewBox="0 0 24 24">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" x2="9" y1="12" y2="12" />
+            </svg>
+            <span class="hidden sm:inline">Logout</span>
+          </button>
+
+          <!-- Dark / Light Mode Toggle Button (Fixed 1:1 Aspect Ratio) -->
+          <button onclick="toggleTheme()" id="theme-toggle-btn"
+            class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-gray-700 dark:text-amber-300 border border-slate-300 dark:border-white/10 transition-all flex items-center justify-center shadow-sm flex-shrink-0"
+            title="Toggle Light / Dark Mode">
+            <span id="theme-icon-slot">
+              <svg class="svg-icon w-4 h-4 text-amber-300" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2" />
+                <path d="M12 20v2" />
+                <path d="m4.93 4.93 1.41 1.41" />
+                <path d="m17.66 17.66 1.41 1.41" />
+                <path d="M2 12h2" />
+                <path d="M20 12h2" />
+                <path d="m6.34 17.66-1.41 1.41" />
+                <path d="m19.07 4.93-1.41 1.41" />
+              </svg>
+            </span>
+          </button>
+
+          <!-- Sync Status Badge -->
+          <div id="sync-status"
+            class="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold whitespace-nowrap flex-shrink-0">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="sync-text">JSON Ready</span>
+          </div>
+
+          <!-- Quick Refresh Button (Fixed 1:1 Aspect Ratio) -->
+          <button onclick="loadAllData(true)" title="Refresh from Google Sheet"
+            class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300 border border-slate-300 dark:border-white/10 transition-all flex items-center justify-center flex-shrink-0 shadow-sm">
+            <svg id="refresh-icon" class="svg-icon w-4 h-4" viewBox="0 0 24 24">
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+              <path d="M21 3v5h-5" />
+              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+              <path d="M8 16H3v5" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTENT WRAPPER ================= -->
+  <main class="flex-1 max-w-7xl 2xl:max-w-[1700px] w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 pb-28 md:pb-8">
+
+    <!-- =============================================================== -->
+    <!-- TAB 1: DASHBOARD & ANALYTICS                                    -->
+    <!-- =============================================================== -->
+    <section id="tab-content-dashboard" class="tab-pane space-y-5 sm:space-y-6">
+
+      <!-- Filter Toolbar Card (Responsive & No-Wrap Overflow) -->
+      <div class="glass-panel p-3.5 sm:p-4 rounded-2xl">
+        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3 sm:gap-4">
+
+          <!-- Left: Filter Presets -->
+          <div class="flex flex-wrap items-center gap-1.5 w-full xl:w-auto">
+            <span
+              class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mr-1 flex items-center gap-1 flex-shrink-0">
+              <svg class="svg-icon w-3.5 h-3.5 text-gray-400" viewBox="0 0 24 24">
+                <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                <line x1="16" x2="16" y1="2" y2="6" />
+                <line x1="8" x2="8" y1="2" y2="6" />
+                <line x1="3" x2="21" y1="10" y2="10" />
+              </svg> Filter:
+            </span>
+            <button onclick="setDatePreset('all')"
+              class="date-preset-btn active px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-brand-600 text-white shadow-sm flex-shrink-0"
+              data-preset="all">All Time</button>
+            <button onclick="setDatePreset('today')"
+              class="date-preset-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-slate-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-white/10 flex-shrink-0"
+              data-preset="today">Today</button>
+            <button onclick="setDatePreset('this_week')"
+              class="date-preset-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-slate-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-white/10 flex-shrink-0"
+              data-preset="this_week">Last 7 Days</button>
+            <button onclick="setDatePreset('this_month')"
+              class="date-preset-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-slate-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-white/10 flex-shrink-0"
+              data-preset="this_month">This Month</button>
+            <button onclick="setDatePreset('last_month')"
+              class="date-preset-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-slate-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-white/10 flex-shrink-0"
+              data-preset="last_month">Last Month</button>
+            <button onclick="setDatePreset('year_2025')"
+              class="date-preset-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-slate-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-white/10 flex-shrink-0"
+              data-preset="year_2025">Year 2025</button>
+          </div>
+
+          <!-- Right: Specific Month & Custom Date Range & Branch Filter -->
+          <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full xl:w-auto">
+
+            <!-- Month Selector -->
+            <div
+              class="flex items-center gap-1 bg-slate-100 dark:bg-slate-900/80 p-1 rounded-xl border border-slate-200 dark:border-white/10 flex-shrink-0">
+              <svg class="svg-icon w-3.5 h-3.5 text-gray-400 ml-1.5" viewBox="0 0 24 24">
+                <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                <line x1="16" x2="16" y1="2" y2="6" />
+                <line x1="8" x2="8" y1="2" y2="6" />
+                <line x1="3" x2="21" y1="10" y2="10" />
+              </svg>
+              <select id="filter-specific-month" onchange="onMonthSelectChanged()"
+                class="bg-transparent text-xs text-gray-800 dark:text-gray-200 py-1 px-1.5 sm:px-2 focus:outline-none cursor-pointer font-medium">
+                <option value="" class="bg-white dark:bg-gray-900 text-gray-400">Select Month...</option>
+                <option value="01">January</option>
+                <option value="02">February</option>
+                <option value="03">March</option>
+                <option value="04">April</option>
+                <option value="05">May</option>
+                <option value="06">June</option>
+                <option value="07">July</option>
+                <option value="08">August</option>
+                <option value="09">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+              <select id="filter-specific-year" onchange="onMonthSelectChanged()"
+                class="bg-transparent text-xs text-gray-800 dark:text-gray-200 py-1 px-1.5 sm:px-2 focus:outline-none cursor-pointer border-l border-slate-300 dark:border-white/10 font-medium">
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+                <option value="2024">2024</option>
+              </select>
+            </div>
+
+            <!-- Custom Date Range -->
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <input type="date" id="filter-start-date" value="2025-01-01" onchange="applyCustomDateFilter()"
+                class="glass-input text-xs px-2 py-1.5 rounded-lg font-medium w-[125px] sm:w-[135px]">
+              <span class="text-xs text-gray-400 font-medium">to</span>
+              <input type="date" id="filter-end-date" value="2025-12-31" onchange="applyCustomDateFilter()"
+                class="glass-input text-xs px-2 py-1.5 rounded-lg font-medium w-[125px] sm:w-[135px]">
+            </div>
+
+            <!-- Branch Filter -->
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <div class="relative">
+                <select id="filter-dashboard-branch" onchange="applyDashboardFilters()"
+                  class="glass-input text-xs pl-8 pr-6 py-1.5 rounded-lg text-brand-600 dark:text-indigo-300 appearance-none font-bold cursor-pointer">
+                  <option value="ALL">All Branches</option>
+                </select>
+                <svg class="svg-icon w-3.5 h-3.5 text-brand-500 absolute left-2.5 top-2.5 pointer-events-none"
+                  viewBox="0 0 24 24">
+                  <line x1="6" x2="6" y1="3" y2="15" />
+                  <circle cx="18" cy="6" r="3" />
+                  <circle cx="6" cy="18" r="3" />
+                  <path d="M18 9a9 9 0 0 1-9 9" />
+                </svg>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- KPI Stat Cards Grid (Ultra-Responsive) -->
+      <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+
+        <!-- Total Revenue -->
+        <div
+          class="glass-panel p-3.5 sm:p-5 rounded-2xl relative overflow-hidden group hover:border-brand-500/40 transition-all">
+          <div class="flex items-center justify-between text-gray-500 dark:text-gray-400 mb-1.5 sm:mb-2">
+            <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider truncate">Filtered Revenue</span>
+            <div
+              class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center flex-shrink-0">
+              <svg class="svg-icon w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500" viewBox="0 0 24 24">
+                <line x1="12" x2="12" y1="2" y2="22" />
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+            </div>
+          </div>
+          <div
+            class="text-lg sm:text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight font-mono truncate"
+            id="kpi-total-revenue">৳ 0</div>
+          <div class="text-[10px] sm:text-[11px] text-gray-400 mt-1 flex items-center gap-1 truncate">
+            <span id="kpi-revenue-subtitle" class="text-emerald-500 font-semibold truncate">Net Payable</span>
+          </div>
+        </div>
+
+        <!-- Total Invoices / Orders -->
+        <div
+          class="glass-panel p-3.5 sm:p-5 rounded-2xl relative overflow-hidden group hover:border-indigo-500/40 transition-all">
+          <div class="flex items-center justify-between text-gray-500 dark:text-gray-400 mb-1.5 sm:mb-2">
+            <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider truncate">Invoices /
+              Orders</span>
+            <div
+              class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center flex-shrink-0">
+              <svg class="svg-icon w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-500" viewBox="0 0 24 24">
+                <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z" />
+                <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" />
+                <path d="M12 17.5v-11" />
+              </svg>
+            </div>
+          </div>
+          <div
+            class="text-lg sm:text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight font-mono truncate"
+            id="kpi-total-orders">0</div>
+          <div class="text-[10px] sm:text-[11px] text-gray-400 mt-1 truncate">
+            <span id="kpi-orders-subtitle">Unique sales bills</span>
+          </div>
+        </div>
+
+        <!-- Unique Active Customers -->
+        <div
+          class="glass-panel p-3.5 sm:p-5 rounded-2xl relative overflow-hidden group hover:border-purple-500/40 transition-all">
+          <div class="flex items-center justify-between text-gray-500 dark:text-gray-400 mb-1.5 sm:mb-2">
+            <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider truncate">Active Buyers</span>
+            <div
+              class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-purple-500/10 text-purple-500 flex items-center justify-center flex-shrink-0">
+              <svg class="svg-icon w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-500" viewBox="0 0 24 24">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <polyline points="16 11 18 13 22 9" />
+              </svg>
+            </div>
+          </div>
+          <div
+            class="text-lg sm:text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight font-mono truncate"
+            id="kpi-active-customers">0</div>
+          <div class="text-[10px] sm:text-[11px] text-purple-500 mt-1 flex items-center gap-1 truncate">
+            <span id="kpi-total-customers-registered">0 in database</span>
+          </div>
+        </div>
+
+        <!-- Average Order Value (AOV) -->
+        <div
+          class="glass-panel p-3.5 sm:p-5 rounded-2xl relative overflow-hidden group hover:border-amber-500/40 transition-all">
+          <div class="flex items-center justify-between text-gray-500 dark:text-gray-400 mb-1.5 sm:mb-2">
+            <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider truncate">Avg Order (AOV)</span>
+            <div
+              class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center flex-shrink-0">
+              <svg class="svg-icon w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500" viewBox="0 0 24 24">
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                <polyline points="16 7 22 7 22 13" />
+              </svg>
+            </div>
+          </div>
+          <div
+            class="text-lg sm:text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight font-mono truncate"
+            id="kpi-aov">৳ 0
+          </div>
+          <div class="text-[10px] sm:text-[11px] text-gray-400 mt-1 truncate">
+            <span>Per invoice average</span>
+          </div>
+        </div>
+
+        <!-- Repeat Customer Rate -->
+        <div
+          class="col-span-2 sm:col-span-2 md:col-span-1 lg:col-span-1 glass-panel p-3.5 sm:p-5 rounded-2xl relative overflow-hidden group hover:border-pink-500/40 transition-all">
+          <div class="flex items-center justify-between text-gray-500 dark:text-gray-400 mb-1.5 sm:mb-2">
+            <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider truncate">Repeat Rate</span>
+            <div
+              class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-pink-500/10 text-pink-500 flex items-center justify-center flex-shrink-0">
+              <svg class="svg-icon w-3.5 h-3.5 sm:w-4 sm:h-4 text-pink-500" viewBox="0 0 24 24">
+                <path d="m17 2 4 4-4 4" />
+                <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+                <path d="m7 22-4-4 4-4" />
+                <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+              </svg>
+            </div>
+          </div>
+          <div
+            class="text-lg sm:text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight font-mono truncate"
+            id="kpi-repeat-rate">0%</div>
+          <div class="text-[10px] sm:text-[11px] text-pink-500 mt-1 truncate">
+            <span id="kpi-repeat-count">0 repeat buyers</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Charts & Visual Analytics Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Sales & Order Trend (2 Columns) -->
+        <div class="lg:col-span-2 glass-panel p-5 rounded-2xl flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-sm text-gray-900 dark:text-white">Daily Sales Progression</h3>
+              <p class="text-xs text-gray-500 dark:text-gray-400">Revenue velocity in selected period</p>
+            </div>
+            <span class="text-xs text-brand-600 dark:text-brand-400 font-bold flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-brand-500"></span> Sales Net Amount
+            </span>
+          </div>
+          <div class="h-64 relative flex items-center justify-center" id="trend-chart-box">
+            <canvas id="salesTrendChart"></canvas>
+            <div id="trend-empty-state"
+              class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+              <p class="text-xs text-gray-400 font-medium">No sales recorded yet.</p>
+              <button onclick="switchTab('import')"
+                class="mt-2 text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline">Import POS2IN Data
+                <svg class="svg-icon w-3 h-3 inline ml-0.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Branch Revenue Breakdown (1 Column) -->
+        <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-sm text-gray-900 dark:text-white">Branch Performance</h3>
+              <p class="text-xs text-gray-500 dark:text-gray-400">Share of revenue across outlets</p>
+            </div>
+            <svg class="svg-icon w-4 h-4 text-gray-400" viewBox="0 0 24 24">
+              <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+              <path d="M22 12A10 10 0 0 0 12 2v10z" />
+            </svg>
+          </div>
+          <div class="h-64 relative flex items-center justify-center" id="branch-chart-box">
+            <canvas id="branchPieChart"></canvas>
+            <div id="branch-empty-state"
+              class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+              <p class="text-xs text-gray-400 font-medium">Awaiting branch transaction data.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Customer Segmentation & Top VIPs -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Customer RFM Segments Chart -->
+        <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-sm text-gray-900 dark:text-white">Customer Segments (RFM)</h3>
+              <p class="text-xs text-gray-500 dark:text-gray-400">Auto-classified by purchase history</p>
+            </div>
+            <svg class="svg-icon w-4 h-4 text-gray-400" viewBox="0 0 24 24">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </div>
+          <div class="h-60 relative flex items-center justify-center" id="segment-chart-box">
+            <canvas id="segmentChart"></canvas>
+            <div id="segment-empty-state"
+              class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+              <p class="text-xs text-gray-400 font-medium">Customer classification ready upon import.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Spenders Leaderboard -->
+        <div class="lg:col-span-2 glass-panel p-5 rounded-2xl">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-sm text-gray-900 dark:text-white">Top VIP Customers in Selected Period</h3>
+              <p class="text-xs text-gray-500 dark:text-gray-400">Ranked by purchase volume</p>
+            </div>
+            <button onclick="switchTab('customers')"
+              class="text-xs text-brand-600 dark:text-brand-400 hover:underline font-bold flex items-center gap-1">
+              View All Directory <svg class="svg-icon w-3 h-3 inline" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead
+                class="text-gray-500 dark:text-gray-400 border-b border-slate-200 dark:border-white/10 uppercase font-semibold">
+                <tr>
+                  <th class="py-2 px-3">Customer</th>
+                  <th class="py-2 px-3">Phone</th>
+                  <th class="py-2 px-3">Tier</th>
+                  <th class="py-2 px-3">Branch</th>
+                  <th class="py-2 px-3 text-right">Filtered Spend</th>
+                  <th class="py-2 px-3 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="top-customers-table-body"
+                class="divide-y divide-slate-200 dark:divide-white/10 text-gray-700 dark:text-gray-300">
+                <tr>
+                  <td colspan="6" class="text-center py-8 text-gray-400 font-medium">
+                    No customer transactions in this database. Click <button onclick="switchTab('import')"
+                      class="text-brand-600 dark:text-brand-400 underline font-bold">Import POS2IN</button> to upload
+                    your sales register.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- =============================================================== -->
+    <!-- =============================================================== -->
+    <!-- TAB 2: CUSTOMER DIRECTORY & CREDENTIAL SEARCH                   -->
+    <!-- =============================================================== -->
+    <section id="tab-content-customers" class="tab-pane hidden space-y-5">
+
+      <!-- Search & Filter Controls Card -->
+      <div class="glass-panel p-4 sm:p-5 rounded-2xl sm:rounded-3xl space-y-4">
+
+        <!-- Top Row: Search + Sort + View Switcher + Export -->
+        <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 sm:gap-4">
+          <!-- Live Credential Search Input -->
+          <div class="relative flex-1 max-w-full md:max-w-md">
+            <input type="text" id="customer-search-input" oninput="onCustomerSearchInput()"
+              placeholder="Search Phone (017...), Customer Name, Bill No..."
+              class="glass-input w-full pl-10 pr-10 py-2.5 rounded-xl text-xs sm:text-sm font-medium placeholder-gray-400 min-h-[42px]">
+            <svg class="svg-icon w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <button onclick="clearCustomerSearch()" id="search-clear-btn"
+              class="hidden absolute right-3 top-3 text-gray-400 hover:text-gray-700 dark:hover:text-white p-0.5">
+              <svg class="svg-icon w-4 h-4" viewBox="0 0 24 24">
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Sort Selector + View Switcher + Export Button -->
+          <div class="flex flex-wrap items-center justify-between md:justify-end gap-2 sm:gap-3">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-bold text-gray-500 dark:text-gray-400 hidden sm:flex items-center gap-1">
+                <svg class="svg-icon w-3.5 h-3.5 text-gray-400" viewBox="0 0 24 24">
+                  <path d="m21 16-4 4-4-4" />
+                  <path d="M17 20V4" />
+                  <path d="m3 8 4-4 4 4" />
+                  <path d="M7 4v16" />
+                </svg> Sort:
+              </span>
+              <select id="customer-sort-select" onchange="renderCustomerList()"
+                class="glass-input text-xs py-2 px-2.5 rounded-xl font-semibold cursor-pointer min-h-[40px]">
+                <option value="spend_desc">Highest Lifetime Spend</option>
+                <option value="period_spend_desc">Highest Period Spend</option>
+                <option value="visits_desc">Most Orders / Visits</option>
+                <option value="recent_desc">Most Recent Purchase</option>
+                <option value="aov_desc">Highest Avg Order Value</option>
+                <option value="name_asc">Name (A - Z)</option>
+                <option value="at_risk">At-Risk First</option>
+              </select>
+            </div>
+
+            <!-- View Switcher (Cards vs Table) -->
+            <div
+              class="flex items-center bg-slate-100 dark:bg-slate-900/80 p-1 rounded-xl border border-slate-300 dark:border-white/10">
+              <button onclick="setCustomerView('cards')" id="view-mode-cards"
+                class="p-2 rounded-lg text-white bg-brand-600 shadow" title="Card View">
+                <svg class="svg-icon w-4 h-4" viewBox="0 0 24 24">
+                  <rect width="7" height="7" x="3" y="3" rx="1" />
+                  <rect width="7" height="7" x="14" y="3" rx="1" />
+                  <rect width="7" height="7" x="14" y="14" rx="1" />
+                  <rect width="7" height="7" x="3" y="14" rx="1" />
+                </svg>
+              </button>
+              <button onclick="setCustomerView('table')" id="view-mode-table"
+                class="p-2 rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-white" title="Table View">
+                <svg class="svg-icon w-4 h-4" viewBox="0 0 24 24">
+                  <path d="M12 3v18" />
+                  <rect width="18" height="18" x="3" y="3" rx="2" />
+                  <path d="M3 9h18" />
+                  <path d="M3 15h18" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Export CSV -->
+            <button onclick="exportCustomersToCSV()"
+              class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-gray-700 dark:text-gray-200 text-xs font-bold border border-slate-300 dark:border-white/10 flex items-center gap-1.5 transition-all min-h-[40px]"
+              title="Export Filtered Customers to CSV">
+              <svg class="svg-icon w-3.5 h-3.5 text-brand-500" viewBox="0 0 24 24">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" x2="12" y1="15" y2="3" />
+              </svg>
+              <span class="hidden sm:inline">Export</span> CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Middle Row: Customer Date & Month Range Filter Toolbar -->
+        <div class="pt-3 border-t border-slate-200 dark:border-white/10 space-y-3">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <!-- Date Presets -->
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span
+                class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mr-1 flex items-center gap-1">
+                <svg class="svg-icon w-3.5 h-3.5 text-brand-500" viewBox="0 0 24 24">
+                  <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                  <line x1="16" x2="16" y1="2" y2="6" />
+                  <line x1="8" x2="8" y1="2" y2="6" />
+                  <line x1="3" x2="21" y1="10" y2="10" />
+                </svg> Date Filter:
+              </span>
+              <button onclick="setCustomerDatePreset('all')"
+                class="cust-date-preset-btn active px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-brand-600 text-white shadow-sm"
+                data-cust-preset="all">All Time</button>
+              <button onclick="setCustomerDatePreset('today')"
+                class="cust-date-preset-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-slate-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-white/10"
+                data-cust-preset="today">Today</button>
+              <button onclick="setCustomerDatePreset('this_week')"
+                class="cust-date-preset-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-slate-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-white/10"
+                data-cust-preset="this_week">Last 7 Days</button>
+              <button onclick="setCustomerDatePreset('this_month')"
+                class="cust-date-preset-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-slate-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-white/10"
+                data-cust-preset="this_month">This Month</button>
+              <button onclick="setCustomerDatePreset('last_month')"
+                class="cust-date-preset-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-slate-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-white/10"
+                data-cust-preset="last_month">Last Month</button>
+              <button onclick="setCustomerDatePreset('year_2025')"
+                class="cust-date-preset-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-slate-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-slate-200 dark:hover:bg-white/10"
+                data-cust-preset="year_2025">Year 2025</button>
+            </div>
+
+            <!-- Month & Custom Range Inputs -->
+            <div class="flex flex-wrap items-center gap-2">
+              <!-- Specific Month Select -->
+              <div
+                class="flex items-center gap-1 bg-slate-100 dark:bg-slate-900/80 p-1 rounded-xl border border-slate-200 dark:border-white/10">
+                <select id="filter-customer-month" onchange="onCustomerMonthSelectChanged()"
+                  class="bg-transparent text-xs text-gray-800 dark:text-gray-200 py-1 px-2 focus:outline-none cursor-pointer font-medium">
+                  <option value="" class="bg-white dark:bg-gray-900 text-gray-400">All Months...</option>
+                  <option value="01">January</option>
+                  <option value="02">February</option>
+                  <option value="03">March</option>
+                  <option value="04">April</option>
+                  <option value="05">May</option>
+                  <option value="06">June</option>
+                  <option value="07">July</option>
+                  <option value="08">August</option>
+                  <option value="09">September</option>
+                  <option value="10">October</option>
+                  <option value="11">November</option>
+                  <option value="12">December</option>
+                </select>
+                <select id="filter-customer-year" onchange="onCustomerMonthSelectChanged()"
+                  class="bg-transparent text-xs text-gray-800 dark:text-gray-200 py-1 px-2 focus:outline-none cursor-pointer border-l border-slate-300 dark:border-white/10 font-medium">
+                  <option value="2025">2025</option>
+                  <option value="2026">2026</option>
+                  <option value="2024">2024</option>
+                </select>
+              </div>
+
+              <!-- Custom Date Range -->
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <input type="date" id="filter-customer-start-date" onchange="applyCustomerCustomDateFilter()"
+                  class="glass-input text-xs px-2 py-1.5 rounded-lg font-medium w-[125px] sm:w-[135px]">
+                <span class="text-xs text-gray-400 font-medium">to</span>
+                <input type="date" id="filter-customer-end-date" onchange="applyCustomerCustomDateFilter()"
+                  class="glass-input text-xs px-2 py-1.5 rounded-lg font-medium w-[125px] sm:w-[135px]">
+              </div>
+
+              <!-- Clear Date Filter Button -->
+              <button onclick="clearCustomerDateFilter()" id="btn-clear-customer-date"
+                class="hidden px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-bold transition-all flex items-center gap-1 flex-shrink-0"
+                title="Reset Date Range Filter">
+                <svg class="svg-icon w-3 h-3" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Clear
+              </button>
+            </div>
+          </div>
+
+          <!-- Active Filter Banner Indicator -->
+          <div id="customer-date-filter-indicator"
+            class="hidden flex items-center justify-between bg-brand-500/10 border border-brand-500/30 text-brand-600 dark:text-brand-300 px-3.5 py-2 rounded-xl text-xs font-semibold animate-fade-in">
+            <div class="flex items-center gap-2">
+              <svg class="svg-icon w-3.5 h-3.5 text-brand-500" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+              <span id="customer-date-filter-text">Active Date Filter</span>
+            </div>
+            <button onclick="clearCustomerDateFilter()"
+              class="text-xs text-rose-500 hover:text-rose-700 dark:hover:text-rose-300 underline font-bold">Reset Date
+              Filter</button>
+          </div>
+        </div>
+
+        <!-- Bottom Row: Tier & Branch Filter Chips -->
+        <div class="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-200 dark:border-white/10">
+          <span class="text-xs font-bold text-gray-500 dark:text-gray-400 mr-1">Tier:</span>
+          <button onclick="setTierFilter('ALL')"
+            class="tier-filter-chip active px-3 py-1 rounded-full text-xs font-semibold bg-brand-600 text-white"
+            data-tier="ALL">All (<span id="count-tier-all">0</span>)</button>
+          <button onclick="setTierFilter('VIP')" class="tier-filter-chip px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/30 hover:bg-amber-500/20 flex items-center gap-1.5" data-tier="VIP"><svg class="w-3.5 h-3.5 text-amber-500" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> VIP (<span id="count-tier-vip">0</span>)</button>
+          <button onclick="setTierFilter('REGULAR')" class="tier-filter-chip px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/20 flex items-center gap-1.5" data-tier="REGULAR"><svg class="w-3.5 h-3.5 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg> Regular (<span id="count-tier-regular">0</span>)</button>
+          <button onclick="setTierFilter('NEW')" class="tier-filter-chip px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/20 flex items-center gap-1.5" data-tier="NEW"><svg class="w-3.5 h-3.5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg> New (<span id="count-tier-new">0</span>)</button>
+          <button onclick="setTierFilter('AT_RISK')" class="tier-filter-chip px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 flex items-center gap-1.5" data-tier="AT_RISK"><svg class="w-3.5 h-3.5 text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg> At-Risk (<span id="count-tier-atrisk">0</span>)</button>
+
+          <div class="ml-auto flex items-center gap-2">
+            <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold">Branch:</span>
+            <select id="filter-customer-branch" onchange="renderCustomerList()"
+              class="glass-input text-xs py-1.5 px-3 rounded-lg font-semibold min-h-[36px]">
+              <option value="ALL">All Branches</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Customer Cards Grid Container (Ultra-Responsive) -->
+      <div id="customer-cards-container"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Customer Table Container (Alternative View) -->
+      <div id="customer-table-container" class="hidden glass-panel rounded-2xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs min-w-[700px]">
+            <thead
+              class="text-gray-500 dark:text-gray-400 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-white/10 uppercase font-semibold">
+              <tr>
+                <th class="py-3 px-4">Customer Name</th>
+                <th class="py-3 px-4">Phone / Contact</th>
+                <th class="py-3 px-4">Loyalty Tier</th>
+                <th class="py-3 px-4">Primary Branch</th>
+                <th class="py-3 px-4 text-center" id="th-table-orders">Orders</th>
+                <th class="py-3 px-4 text-right" id="th-table-spend">Total Spend</th>
+                <th class="py-3 px-4 text-right">Avg Order</th>
+                <th class="py-3 px-4">Last Purchase</th>
+                <th class="py-3 px-4 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="customer-table-body"
+              class="divide-y divide-slate-200 dark:divide-white/10 text-gray-700 dark:text-gray-300 font-mono">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div id="customer-empty-state" class="glass-panel p-8 sm:p-12 text-center rounded-2xl sm:rounded-3xl">
+        <div
+          class="w-14 h-14 sm:w-16 sm:h-16 mx-auto rounded-2xl bg-slate-100 dark:bg-gray-800 flex items-center justify-center text-gray-400 mb-3">
+          <svg class="svg-icon w-8 h-8 text-gray-400" viewBox="0 0 24 24">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <line x1="18" x2="23" y1="8" y2="13" />
+            <line x1="23" x2="18" y1="8" y2="13" />
+          </svg>
+        </div>
+        <h4 class="font-bold text-gray-800 dark:text-gray-200 text-base">No Customers Found</h4>
+        <p class="text-xs text-gray-500 mt-1 max-w-sm mx-auto">No customer records match your active search, date range,
+          branch, or tier filters.</p>
+        <div class="mt-4 flex items-center justify-center gap-2">
+          <button onclick="resetCustomerFilters()"
+            class="px-4 py-2 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-gray-700 dark:text-white rounded-xl text-xs font-bold transition-all">Reset
+            All Filters</button>
+          <button onclick="switchTab('import')"
+            class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-bold transition-all">Import
+            POS2IN</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- =============================================================== -->
+    <!-- TAB 3: POS2IN IMPORT CENTER                                     -->
+    <!-- =============================================================== -->
+    <section id="tab-content-import" class="tab-pane hidden space-y-6">
+
+      <!-- Import Header Info -->
+      <div class="glass-panel p-6 rounded-2xl">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <svg class="svg-icon w-6 h-6 text-brand-600 dark:text-brand-400" viewBox="0 0 24 24">
+                <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+                <path d="M12 12v9" />
+                <path d="m16 16-4-4-4 4" />
+              </svg> Import Data from POS2IN
+            </h2>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Upload POS2IN Sales Register exports. All imported
+              records will be assigned to your chosen branch.</p>
+          </div>
+
+          <!-- Branch Selection during Import -->
+          <div
+            class="bg-indigo-50 dark:bg-indigo-950/40 p-3.5 rounded-2xl border border-indigo-200 dark:border-indigo-500/30 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center shadow">
+                <svg class="svg-icon w-4 h-4 text-white" viewBox="0 0 24 24">
+                  <line x1="6" x2="6" y1="3" y2="15" />
+                  <circle cx="18" cy="6" r="3" />
+                  <circle cx="6" cy="18" r="3" />
+                  <path d="M18 9a9 9 0 0 1-9 9" />
+                </svg>
+              </div>
+              <div>
+                <label
+                  class="text-[11px] font-extrabold uppercase text-brand-700 dark:text-indigo-300 tracking-wider block">Import
+                  Target Branch *</label>
+                <span class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">Overrides CSV Sales Point
+                  column</span>
+              </div>
+            </div>
+            <select id="import-branch-select" onchange="onImportBranchChanged()"
+              class="glass-input text-xs font-bold py-2 px-3 rounded-xl border-indigo-400/50 cursor-pointer shadow-sm">
+              <!-- Populated via JS -->
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Zone & Raw Input -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- Drag & Drop File Upload -->
+        <div class="glass-panel p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <h3 class="font-bold text-sm text-gray-800 dark:text-gray-200 mb-1 flex items-center gap-2">
+              <svg class="svg-icon w-4 h-4 text-emerald-500" viewBox="0 0 24 24">
+                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+                <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                <path d="M8 13h2" />
+                <path d="M14 13h2" />
+                <path d="M8 17h2" />
+                <path d="M14 17h2" />
+              </svg> Upload POS2IN CSV / Excel File
+            </h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Export sales or bill register from POS2IN and drop
+              here</p>
+
+            <div id="drop-zone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)"
+              ondrop="handleFileDrop(event)"
+              class="border-2 border-dashed border-slate-300 dark:border-gray-700 hover:border-brand-500 rounded-2xl p-8 text-center transition-all bg-slate-50 dark:bg-gray-900/40 cursor-pointer"
+              onclick="document.getElementById('pos-file-input').click()">
+              <input type="file" id="pos-file-input" accept=".csv, .txt, .json, .xlsx, .xls" class="hidden"
+                onchange="handleFileSelect(event)">
+              <div
+                class="w-14 h-14 mx-auto rounded-2xl bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center mb-3">
+                <svg class="svg-icon w-7 h-7 text-brand-600 dark:text-brand-400" viewBox="0 0 24 24">
+                  <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+                  <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                  <path d="M12 12v6" />
+                  <path d="m15 15-3-3-3 3" />
+                </svg>
+              </div>
+              <p class="text-sm font-bold text-gray-800 dark:text-gray-200">Click to upload or drag & drop</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Select your POS2IN CSV export file</p>
+              <div id="file-info-badge"
+                class="hidden mt-3 inline-flex items-center gap-2 px-3 py-1 bg-brand-500/20 text-brand-700 dark:text-brand-300 rounded-lg text-xs font-mono">
+                <svg class="svg-icon w-3.5 h-3.5" viewBox="0 0 24 24">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg> <span id="file-name-text">file.csv</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 flex items-center justify-between pt-4 border-t border-slate-200 dark:border-white/10">
+            <span class="text-xs text-gray-500">Auto-groups multi-item bills by Invoice No</span>
+            <span class="text-[11px] text-gray-400">Strict Branch Mapping</span>
+          </div>
+        </div>
+
+        <!-- Copy-Paste Raw Text / Table Area -->
+        <div class="glass-panel p-6 rounded-2xl flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="font-bold text-sm text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                <svg class="svg-icon w-4 h-4 text-purple-500" viewBox="0 0 24 24">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                  <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
+                  <path d="M8 11h8" />
+                  <path d="M8 16h8" />
+                </svg> Or Paste POS2IN CSV Lines
+              </h3>
+              <button onclick="clearPasteArea()"
+                class="text-[11px] text-gray-500 hover:text-gray-900 dark:hover:text-gray-200 font-semibold">Clear</button>
+            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Copy rows from POS2IN report and paste directly
+              below</p>
+
+            <textarea id="raw-paste-area" oninput="parseRawPasteContent()" rows="8"
+              placeholder="Sales Date,Invoice No,Sales Point,Sales Staff,Category,Sub Category,Product Model/Name,Quantity,Selling Price,Sub Total,Discount (Tk),Net Payable,Paid,Due,Customer,Phone,Address"
+              class="glass-input font-mono text-xs w-full p-3 rounded-xl resize-none h-44"></textarea>
+          </div>
+
+          <div class="mt-3 flex items-center justify-between">
+            <span id="paste-stats" class="text-xs text-gray-500 dark:text-gray-400 font-mono">0 rows detected</span>
+            <button onclick="parseRawPasteContent(true)"
+              class="px-3 py-1.5 bg-purple-600/20 hover:bg-purple-600/30 text-purple-700 dark:text-purple-300 text-xs font-bold rounded-lg border border-purple-500/30">Parse
+              Data</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Preview & Validation Box -->
+      <div id="import-preview-section" class="hidden glass-panel p-6 rounded-2xl space-y-4">
+
+        <div
+          class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-white/10">
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-bold text-base text-gray-900 dark:text-white">Import Preview & Validation</h3>
+              <span id="preview-badge-count"
+                class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-mono text-xs font-bold">0
+                Invoices Validated</span>
+            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Multi-line items grouped by Invoice No. Ready to
+              process into Google Sheet JSON storage.</p>
+          </div>
+
+          <!-- Commit Action Button -->
+          <div class="flex items-center gap-3">
+            <button onclick="cancelImportPreview()"
+              class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">Cancel</button>
+            <button onclick="executeSaveToGoogleSheets()" id="btn-save-sheets"
+              class="px-6 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 hover:from-brand-500 hover:to-purple-500 text-white shadow-lg shadow-brand-500/25 flex items-center gap-2">
+              <svg class="svg-icon w-4 h-4 text-white" viewBox="0 0 24 24">
+                <ellipse cx="12" cy="5" rx="9" ry="3" />
+                <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+                <path d="M3 12A9 3 0 0 0 21 12" />
+              </svg> Process & Save to Google Sheets
+            </button>
+          </div>
+        </div>
+
+        <!-- Column Mapping Status -->
+        <div
+          class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-200 dark:border-white/10 text-xs">
+          <div><span class="text-gray-500 dark:text-gray-400">Assigned Branch:</span> <strong id="preview-stat-branch"
+              class="text-brand-600 dark:text-indigo-300 block font-bold">Main Branch</strong></div>
+          <div><span class="text-gray-500 dark:text-gray-400">Total Net Payable:</span> <strong id="preview-stat-amount"
+              class="text-emerald-600 dark:text-emerald-400 block font-mono font-bold">৳ 0</strong></div>
+          <div><span class="text-gray-500 dark:text-gray-400">Unique Customers:</span> <strong
+              id="preview-stat-customers"
+              class="text-purple-600 dark:text-purple-300 block font-mono font-bold">0</strong></div>
+          <div><span class="text-gray-500 dark:text-gray-400">Date Span:</span> <strong id="preview-stat-dates"
+              class="text-gray-800 dark:text-gray-200 block font-mono">-</strong></div>
+        </div>
+
+        <!-- Preview Table -->
+        <div class="overflow-x-auto max-h-80 overflow-y-auto">
+          <table class="w-full text-left text-xs">
+            <thead
+              class="text-gray-500 dark:text-gray-400 bg-slate-100 dark:bg-slate-900 sticky top-0 border-b border-slate-200 dark:border-white/10 uppercase font-semibold">
+              <tr>
+                <th class="py-2.5 px-3">#</th>
+                <th class="py-2.5 px-3">Invoice No</th>
+                <th class="py-2.5 px-3">Sales Date</th>
+                <th class="py-2.5 px-3">Customer Name</th>
+                <th class="py-2.5 px-3">Phone / Mobile</th>
+                <th class="py-2.5 px-3">Assigned Branch</th>
+                <th class="py-2.5 px-3 text-right">Net Payable</th>
+                <th class="py-2.5 px-3">Items & Quantities</th>
+              </tr>
+            </thead>
+            <tbody id="preview-table-body"
+              class="divide-y divide-slate-200 dark:divide-white/10 text-gray-700 dark:text-gray-300 font-mono">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- =============================================================== -->
+    <!-- TAB 4: BRANCH MANAGEMENT (WITH EDIT & CASCADE DELETE)           -->
+    <!-- =============================================================== -->
+    <section id="tab-content-branches" class="tab-pane hidden space-y-6">
+
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass-panel p-6 rounded-2xl">
+        <div>
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <svg class="svg-icon w-6 h-6 text-brand-600 dark:text-brand-400" viewBox="0 0 24 24">
+              <line x1="6" x2="6" y1="3" y2="15" />
+              <circle cx="18" cy="6" r="3" />
+              <circle cx="6" cy="18" r="3" />
+              <path d="M18 9a9 9 0 0 1-9 9" />
+            </svg> Store Outlets & Branches
+          </h2>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Manage POS2IN branches, edit branch names, track
+            performance, or purge inactive outlets.</p>
+        </div>
+
+        <button onclick="openAddBranchModal()"
+          class="px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white flex items-center gap-2 shadow-lg shadow-brand-500/20">
+          <svg class="svg-icon w-4 h-4 text-white" viewBox="0 0 24 24">
+            <path d="M5 12h14" />
+            <path d="M12 5v14" />
+          </svg> Add New Branch
+        </button>
+      </div>
+
+      <!-- Branch Cards Grid -->
+      <div id="branches-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Rendered via JS -->
+      </div>
+
+    </section>
+
+    <!-- =============================================================== -->
+    <!-- TAB 5: DATA CLEANUP & DELETION CENTER                           -->
+    <!-- =============================================================== -->
+    <section id="tab-content-delete" class="tab-pane hidden space-y-6">
+
+      <div class="glass-panel p-6 rounded-2xl border-l-4 border-rose-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <svg class="svg-icon w-6 h-6 text-rose-500" viewBox="0 0 24 24">
+                <path d="M3 6h18" />
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                <line x1="10" x2="10" y1="11" y2="17" />
+                <line x1="14" x2="14" y1="11" y2="17" />
+              </svg> Data Management & Deletion Center
+            </h2>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Delete records selectively by Branch, Specific
+              Month, Date Range, or Customer Credentials with instant preview and Google Sheets sync.</p>
+          </div>
+          <span
+            class="px-3 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30 flex items-center gap-1">
+            <svg class="svg-icon w-3.5 h-3.5 text-rose-500" viewBox="0 0 24 24">
+              <path
+                d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+              <path d="M12 8v4" />
+              <path d="M12 16h.01" />
+            </svg> Safe Cleanup Engine
+          </span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Mode A: Delete by Branch / Date / Month Filter -->
+        <div class="lg:col-span-2 glass-panel p-6 rounded-2xl space-y-5">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/10">
+            <h3 class="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-2">
+              <svg class="svg-icon w-4 h-4 text-brand-500" viewBox="0 0 24 24">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+              </svg> Option 1: Delete by Branch & Date Filters
+            </h3>
+            <span class="text-[11px] text-gray-400">Selective Batch Cleanup</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="text-xs font-semibold text-gray-600 dark:text-gray-400 block mb-1">Target Branch</label>
+              <select id="delete-filter-branch" class="glass-input text-xs w-full py-2 px-3 rounded-xl font-semibold">
+                <option value="ALL">All Branches</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-gray-600 dark:text-gray-400 block mb-1">Specific Month</label>
+              <select id="delete-filter-month" class="glass-input text-xs w-full py-2 px-3 rounded-xl font-semibold">
+                <option value="">Any Month</option>
+                <option value="01">January</option>
+                <option value="02">February</option>
+                <option value="03">March</option>
+                <option value="04">April</option>
+                <option value="05">May</option>
+                <option value="06">June</option>
+                <option value="07">July</option>
+                <option value="08">August</option>
+                <option value="09">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-gray-600 dark:text-gray-400 block mb-1">Year</label>
+              <select id="delete-filter-year" class="glass-input text-xs w-full py-2 px-3 rounded-xl font-semibold">
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+                <option value="2024">2024</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Custom Date Span -->
+          <div class="flex items-center gap-3">
+            <div class="flex-1">
+              <label class="text-xs font-semibold text-gray-600 dark:text-gray-400 block mb-1">From Date
+                (Optional)</label>
+              <input type="date" id="delete-start-date"
+                class="glass-input text-xs w-full py-1.5 px-3 rounded-xl font-medium">
+            </div>
+            <div class="flex-1">
+              <label class="text-xs font-semibold text-gray-600 dark:text-gray-400 block mb-1">To Date
+                (Optional)</label>
+              <input type="date" id="delete-end-date"
+                class="glass-input text-xs w-full py-1.5 px-3 rounded-xl font-medium">
+            </div>
+          </div>
+
+          <!-- Preview & Action Buttons -->
+          <div class="pt-2 flex flex-wrap items-center justify-between gap-3">
+            <button onclick="previewDeletionMatches()"
+              class="px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white flex items-center gap-1.5 shadow">
+              <svg class="svg-icon w-4 h-4 text-white" viewBox="0 0 24 24">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg> Preview Matching Invoices
+            </button>
+            <button onclick="executeDeletionByFilter()" id="btn-delete-by-filter"
+              class="px-5 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white flex items-center gap-2 shadow-lg shadow-rose-600/25">
+              <svg class="svg-icon w-4 h-4 text-white" viewBox="0 0 24 24">
+                <path d="M3 6h18" />
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                <line x1="10" x2="10" y1="11" y2="17" />
+                <line x1="14" x2="14" y1="11" y2="17" />
+              </svg> Delete Matching Invoices
+            </button>
+          </div>
+
+          <!-- Match Preview Stats & Table -->
+          <div id="delete-preview-box"
+            class="hidden mt-4 bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-3">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-gray-800 dark:text-gray-200">Matching Records Found: <span
+                  id="delete-match-count" class="text-rose-500 font-mono font-bold">0 Invoices</span></span>
+              <span class="text-gray-500">Total Spend: <strong id="delete-match-amount"
+                  class="text-emerald-500 font-mono">৳ 0</strong></span>
+            </div>
+            <div class="overflow-x-auto max-h-48 overflow-y-auto">
+              <table class="w-full text-left text-[11px]">
+                <thead class="text-gray-500 uppercase font-semibold border-b border-slate-300 dark:border-white/10">
+                  <tr>
+                    <th class="py-1 px-2">Invoice No</th>
+                    <th class="py-1 px-2">Date</th>
+                    <th class="py-1 px-2">Customer</th>
+                    <th class="py-1 px-2">Branch</th>
+                    <th class="py-1 px-2 text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody id="delete-preview-tbody"
+                  class="divide-y divide-slate-200 dark:divide-white/10 font-mono text-gray-600 dark:text-gray-300">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode B: Delete Single Customer or Invoice by Credential Search -->
+        <div class="glass-panel p-6 rounded-2xl space-y-5">
+          <div class="pb-3 border-b border-slate-200 dark:border-white/10">
+            <h3 class="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-2">
+              <svg class="svg-icon w-4 h-4 text-purple-500" viewBox="0 0 24 24">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <line x1="22" x2="16" y1="11" y2="11" />
+              </svg> Option 2: Search & Delete
+            </h3>
+            <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Delete specific customer or invoice</p>
+          </div>
+
+          <div>
+            <label class="text-xs font-semibold text-gray-600 dark:text-gray-400 block mb-1">Customer Phone, Name, or
+              Invoice No</label>
+            <div class="relative">
+              <input type="text" id="delete-search-input" oninput="onDeleteSearchInput()"
+                placeholder="e.g. 01712... or 150403"
+                class="glass-input w-full pl-9 pr-3 py-2 rounded-xl text-xs font-medium">
+              <svg class="svg-icon w-3.5 h-3.5 text-gray-400 absolute left-3 top-2.5" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </div>
+          </div>
+
+          <div id="delete-search-results" class="space-y-2 max-h-72 overflow-y-auto">
+            <div class="text-xs text-gray-400 italic text-center py-6">Type a phone number or invoice number to locate
+              records</div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- =============================================================== -->
+    <!-- TAB 6: SETTINGS & DATABASE STORAGE CONFIG                       -->
+    <!-- =============================================================== -->
+    <section id="tab-content-settings" class="tab-pane hidden space-y-6">
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- RFM Tier Configuration -->
+        <div class="glass-panel p-6 rounded-2xl space-y-4">
+          <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <svg class="svg-icon w-5 h-5 text-brand-600 dark:text-brand-400" viewBox="0 0 24 24">
+              <line x1="4" x2="4" y1="21" y2="14" />
+              <line x1="4" x2="4" y1="10" y2="3" />
+              <line x1="12" x2="12" y1="21" y2="12" />
+              <line x1="12" x2="12" y1="8" y2="3" />
+              <line x1="20" x2="20" y1="21" y2="16" />
+              <line x1="20" x2="20" y1="12" y2="3" />
+              <line x1="1" x2="7" y1="14" y2="14" />
+              <line x1="9" x2="15" y1="8" y2="8" />
+              <line x1="17" x2="23" y1="16" y2="16" />
+            </svg> Customer Sorting & Tier Thresholds
+          </h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Configure lifetime spend thresholds for automatic customer
+            classification</p>
+
+          <div class="space-y-3 pt-2">
+            <div>
+              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">Currency Symbol</label>
+              <input type="text" id="setting-currency" value="৳"
+                class="glass-input text-xs px-3 py-2 rounded-lg w-28 font-bold">
+            </div>
+
+            <div>
+              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">VIP Champion Spend Threshold</label>
+              <div class="flex items-center gap-2">
+                <input type="number" id="setting-vip" value="15000"
+                  class="glass-input text-xs px-3 py-2 rounded-lg w-48 font-mono font-bold">
+                <span class="text-xs text-gray-500">Lifetime spend ≥ this are VIPs</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">Loyal Regular Spend Threshold</label>
+              <div class="flex items-center gap-2">
+                <input type="number" id="setting-regular" value="5000"
+                  class="glass-input text-xs px-3 py-2 rounded-lg w-48 font-mono font-bold">
+                <span class="text-xs text-gray-500">Spend ≥ this or ≥3 visits</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">Inactive / At-Risk Days Threshold</label>
+              <div class="flex items-center gap-2">
+                <input type="number" id="setting-inactive" value="60"
+                  class="glass-input text-xs px-3 py-2 rounded-lg w-48 font-mono font-bold">
+                <span class="text-xs text-gray-500">Days without purchase to flag as At-Risk</span>
+              </div>
+            </div>
+
+            <button onclick="saveAppSettings()"
+              class="mt-3 px-5 py-2 rounded-xl text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white flex items-center gap-2">
+              <svg class="svg-icon w-4 h-4 text-white" viewBox="0 0 24 24">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                <polyline points="17 21 17 13 7 13 7 21" />
+                <polyline points="7 3 7 8 15 8" />
+              </svg> Save Thresholds
+            </button>
+          </div>
+        </div>
+
+        <!-- Firebase Cloud Realtime Database & Firestore Details -->
+        <div class="glass-panel p-6 rounded-2xl space-y-4">
+          <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <svg class="svg-icon w-5 h-5 text-indigo-500" viewBox="0 0 24 24">
+              <ellipse cx="12" cy="5" rx="9" ry="3" />
+              <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+              <path d="M3 12A9 3 0 0 0 21 12" />
+            </svg> Cloud Database Summary
+          </h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">All customer records and settings sync live with Google Firebase Cloud. 100% serverless cloud backend ready for GitHub Pages.</p>
+
+          <div class="bg-slate-50 dark:bg-slate-900/70 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-2 text-xs font-mono">
+            <div class="flex justify-between"><span class="text-gray-500">Storage Engine:</span> <span class="text-indigo-500 font-bold">Google Firebase Cloud (RTDB & Firestore)</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Customer Data:</span> <span class="text-emerald-500 font-bold">customers/ collection (Real-Time Cloud)</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Settings Storage:</span> <span class="text-indigo-600 dark:text-indigo-300 font-bold">settings/ (Firebase Cloud Database)</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Sync Latency:</span> <span class="text-emerald-400 font-semibold">Sub-50ms Real-Time Live Sync</span></div>
+          </div>
+
+          <div class="pt-2 space-y-3">
+            <h4 class="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Database Maintenance</h4>
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="exportFullDatabaseJson()"
+                class="px-3.5 py-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-gray-800 dark:text-gray-300 rounded-lg text-xs font-semibold border border-slate-300 dark:border-white/10 flex items-center gap-1.5">
+                <svg class="svg-icon w-3.5 h-3.5 text-amber-500" viewBox="0 0 24 24">
+                  <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+                  <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                </svg> Export Firebase Cloud Backup
+              </button>
+              <button onclick="switchTab('delete')"
+                class="px-3.5 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 rounded-lg text-xs font-semibold border border-rose-500/30 flex items-center gap-1.5">
+                <svg class="svg-icon w-3.5 h-3.5 text-rose-500" viewBox="0 0 24 24">
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                </svg> Manage / Delete Data
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Super Admin Credentials & Master Security Card -->
+        <div class="lg:col-span-2 glass-panel p-6 rounded-2xl space-y-4 border-l-4 border-purple-500 shadow-xl">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <svg class="svg-icon w-5 h-5 text-purple-500" viewBox="0 0 24 24">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <path d="m9 12 2 2 4-4"/>
+                </svg>
+                <h3 class="text-base font-bold text-gray-900 dark:text-white">
+                  Super Admin Credentials & Master Security
+                </h3>
+              </div>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Customize specific master credentials for Super Admin login. Stored securely in your Firebase Cloud Database.
+              </p>
+            </div>
+            <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-600 dark:text-purple-300 text-xs font-mono font-bold">
+              <span>Active Admin:</span>
+              <span id="current-admin-display-username">admin</span>
+            </div>
+          </div>
+
+          <form onsubmit="event.preventDefault(); updateAdminCredentials();" class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+            <div>
+              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">Admin Username / Email</label>
+              <div class="relative">
+                <input type="text" id="setting-admin-username" placeholder="e.g. admin or admin@pos2in.com" value="admin"
+                  class="glass-input text-xs px-3 py-2.5 pl-9 rounded-xl w-full font-mono font-bold">
+                <svg class="svg-icon w-4 h-4 text-purple-500 absolute left-2.5 top-3" viewBox="0 0 24 24">
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
+              </div>
+            </div>
+
+            <div>
+              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">New Admin Password</label>
+              <div class="relative">
+                <input type="password" id="setting-admin-new-pw" placeholder="Enter new password..."
+                  class="glass-input text-xs px-3 py-2.5 pl-9 pr-8 rounded-xl w-full font-mono font-bold">
+                <svg class="svg-icon w-4 h-4 text-purple-500 absolute left-2.5 top-3" viewBox="0 0 24 24">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                <button type="button" onclick="togglePasswordVisibility('setting-admin-new-pw', 'eye-set-admin-new')"
+                  class="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-white p-0.5"
+                  title="Show/Hide Password">
+                  <svg id="eye-set-admin-new" class="svg-icon w-3.5 h-3.5" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">Confirm New Password</label>
+              <div class="relative">
+                <input type="password" id="setting-admin-confirm-pw" placeholder="Re-type new password..."
+                  class="glass-input text-xs px-3 py-2.5 pl-9 pr-8 rounded-xl w-full font-mono font-bold">
+                <svg class="svg-icon w-4 h-4 text-purple-500 absolute left-2.5 top-3" viewBox="0 0 24 24">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <button type="button" onclick="togglePasswordVisibility('setting-admin-confirm-pw', 'eye-set-admin-confirm')"
+                  class="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-white p-0.5"
+                  title="Show/Hide Password">
+                  <svg id="eye-set-admin-confirm" class="svg-icon w-3.5 h-3.5" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="md:col-span-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
+              <span class="text-[11px] text-gray-500 dark:text-gray-400">
+                Default master credentials: <code class="font-mono text-purple-600 dark:text-purple-300 font-bold">admin</code> / <code class="font-mono text-purple-600 dark:text-purple-300 font-bold">pos2in@admin2026</code>
+              </span>
+              <button type="submit"
+                class="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-95 text-white flex items-center gap-2 shadow-md shadow-purple-500/25">
+                <svg class="svg-icon w-4 h-4 text-white" viewBox="0 0 24 24">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                  <polyline points="17 21 17 13 7 13 7 21" />
+                  <polyline points="7 3 7 8 15 8" />
+                </svg>
+                <span>Save Admin Credentials to Cloud</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Google Firebase Cloud Firestore Real-Time Database Engine -->
+        <div class="lg:col-span-2 glass-panel p-6 rounded-2xl space-y-4 border-l-4 border-indigo-500 shadow-xl">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <svg class="svg-icon w-5 h-5 text-indigo-500" viewBox="0 0 24 24">
+                  <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                  <path d="M3 5V19A9 3 0 0 0 21 19V5"/>
+                  <path d="M3 12A9 3 0 0 0 21 12"/>
+                </svg>
+                <h3 class="text-base font-bold text-gray-900 dark:text-white">
+                  Google Firebase Cloud Database <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 font-mono font-semibold">Real-Time Cloud Storage</span>
+                </h3>
+              </div>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                All customer records, settings, and branch security are synchronized live in Google Cloud Firebase with sub-50ms latency.
+              </p>
+            </div>
+            <div id="firebase-status-pill" class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-300">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span id="firebase-status-text">Connected: pos2in-customer-data</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+            <div class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-1">
+              <span class="text-[11px] font-semibold text-gray-500 block uppercase tracking-wider">Project ID</span>
+              <span class="font-mono text-xs font-bold text-brand-600 dark:text-indigo-300">pos2in-customer-data</span>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-1">
+              <span class="text-[11px] font-semibold text-gray-500 block uppercase tracking-wider">Live Customer Profiles</span>
+              <span id="firestore-doc-count" class="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">Loading...</span>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-1">
+              <span class="text-[11px] font-semibold text-gray-500 block uppercase tracking-wider">Storage Engine</span>
+              <span class="font-mono text-xs font-bold text-gray-800 dark:text-gray-200">100% Firebase Cloud Database</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security & Access Control Management -->
+        <div class="lg:col-span-2 glass-panel p-6 rounded-2xl space-y-4 border-l-4 border-indigo-500">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <svg class="svg-icon w-5 h-5 text-indigo-500" viewBox="0 0 24 24">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg> Security, Passwords & Access Control
+              </h3>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Manage branch login passwords, rate-limiting
+                lockouts, and admin access</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="switchTab('branches')"
+                class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold transition-all shadow flex items-center gap-1.5">
+                <span>Manage Branch Passwords</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+            <div
+              class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-1">
+              <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 tracking-wider">Lockout
+                Policy</span>
+              <div class="text-xs font-bold text-gray-800 dark:text-white flex items-center gap-1.5">
+                5 Failed Attempts Lockout
+              </div>
+              <p class="text-[11px] text-gray-500">Branches are automatically locked after 5 invalid attempts to prevent
+                unauthorized access.</p>
+            </div>
+
+            <div
+              class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-1">
+              <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 tracking-wider">Currently
+                Blocked</span>
+              <div id="settings-blocked-count"
+                class="text-sm font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 font-mono">
+                0 Branches Blocked
+              </div>
+              <p class="text-[11px] text-gray-500">Admin can unlock blocked branches from the Branches tab or below.</p>
+            </div>
+
+            <div
+              class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-1">
+              <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 tracking-wider">Settings
+                Storage</span>
+              <div class="text-xs font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1.5 font-mono">
+                Firebase Cloud settings/
+              </div>
+              <p class="text-[11px] text-gray-500">All application configurations, branches, and admin credentials are saved in Firebase Cloud.</p>
+            </div>
+          </div>
+
+          <!-- List of active lockouts if any -->
+          <div id="settings-lockout-container" class="hidden space-y-2 pt-2">
+            <h4 class="text-xs font-bold text-rose-600 uppercase tracking-wider">Blocked Outlets Requiring Attention
+            </h4>
+            <div id="settings-lockout-list" class="space-y-2">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- =============================================================== -->
+  <!-- =============================================================== -->
+  <!-- MODAL: CUSTOMER PURCHASE HISTORY & PROFILE DRILLDOWN            -->
+  <!-- =============================================================== -->
+  <div id="customer-modal" onclick="if(event.target === this) closeCustomerModal()"
+    class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fade-in"
+    style="display: none;">
+    <div class="glass-panel w-full max-w-4xl max-h-[90vh] flex flex-col rounded-3xl overflow-hidden shadow-2xl"
+      onclick="event.stopPropagation()">
+
+      <!-- Modal Header -->
+      <div
+        class="p-6 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-white/10 flex items-start justify-between">
+        <div class="flex items-center gap-4">
+          <div id="modal-cust-avatar"
+            class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-brand-600 to-purple-600 flex items-center justify-center font-extrabold text-xl text-white shadow-lg">
+            JD
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 id="modal-cust-name" class="text-xl font-bold text-gray-900 dark:text-white">Customer Name</h3>
+              <span id="modal-cust-tier"
+                class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/30">VIP
+                Champion</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <span class="flex items-center gap-1 font-mono font-bold text-gray-800 dark:text-gray-200"><svg class="svg-icon w-3 h-3 text-gray-400" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span
+                  id="modal-cust-phone">017XXXXXXXX</span></span>
+              <span class="flex items-center gap-1 font-mono text-gray-500"># <span
+                  id="modal-cust-id">CUST-1001</span></span>
+              <span class="flex items-center gap-1 font-semibold text-brand-600 dark:text-indigo-300"><svg class="svg-icon w-3 h-3 text-brand-500" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M19 21v-4"/><path d="M19 17a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v4"/><path d="M9 10h1"/><path d="M14 10h1"/><path d="M9 14h1"/><path d="M14 14h1"/><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg><span
+                  id="modal-cust-branch">Main Branch</span></span>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="closeCustomerModal()"
+          class="p-2 rounded-xl bg-slate-200 dark:bg-white/5 hover:bg-slate-300 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400">
+          <svg class="svg-icon w-5 h-5" viewBox="0 0 24 24">
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Quick Action Buttons Bar -->
+      <div
+        class="px-6 py-3 bg-slate-100/60 dark:bg-slate-900/60 border-b border-slate-200 dark:border-white/10 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <!-- WhatsApp Contact Button -->
+          <a id="modal-whatsapp-btn" href="#" target="_blank"
+            class="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5">
+            <svg class="svg-icon w-3.5 h-3.5 text-emerald-500" viewBox="0 0 24 24">
+              <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+            </svg> WhatsApp Customer
+          </a>
+          <!-- Copy Phone -->
+          <button onclick="copyCustomerPhone()"
+            class="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-white/5 hover:bg-slate-300 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300 text-xs font-semibold flex items-center gap-1.5">
+            <svg class="svg-icon w-3.5 h-3.5" viewBox="0 0 24 24">
+              <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+            </svg> Copy Phone
+          </button>
+        </div>
+
+        <!-- Date Range Info -->
+        <div class="text-[11px] text-gray-500 dark:text-gray-400 font-medium">
+          First purchase: <span id="modal-first-date"
+            class="font-mono text-gray-700 dark:text-gray-300 font-bold">-</span> | Last active: <span
+            id="modal-last-date" class="font-mono text-gray-700 dark:text-gray-300 font-bold">-</span>
+        </div>
+      </div>
+
+      <!-- Summary Metrics Grid -->
+      <div
+        class="p-6 grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 dark:bg-slate-900/40 border-b border-slate-200 dark:border-white/10">
+        <div class="glass-panel p-3.5 rounded-xl">
+          <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 tracking-wider">Lifetime
+            Spend</span>
+          <div id="modal-stat-spend"
+            class="text-lg font-extrabold text-emerald-600 dark:text-emerald-400 font-mono mt-0.5">৳ 0</div>
+        </div>
+        <div class="glass-panel p-3.5 rounded-xl">
+          <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 tracking-wider">Total
+            Invoices</span>
+          <div id="modal-stat-visits" class="text-lg font-extrabold text-gray-900 dark:text-white font-mono mt-0.5">0
+          </div>
+        </div>
+        <div class="glass-panel p-3.5 rounded-xl">
+          <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 tracking-wider">Avg Order Value
+            (AOV)</span>
+          <div id="modal-stat-aov" class="text-lg font-extrabold text-brand-600 dark:text-indigo-300 font-mono mt-0.5">৳
+            0</div>
+        </div>
+        <div class="glass-panel p-3.5 rounded-xl">
+          <span class="text-[10px] uppercase font-bold text-gray-500 dark:text-gray-400 tracking-wider">Branches
+            Visited</span>
+          <div id="modal-stat-branches" class="text-xs font-bold text-gray-800 dark:text-gray-200 mt-1 truncate">Main
+            Branch</div>
+        </div>
+      </div>
+
+      <!-- Purchase History Timeline & Table -->
+      <div class="p-6 flex-1 overflow-y-auto space-y-3">
+        <div class="flex items-center justify-between">
+          <h4
+            class="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+            <svg class="svg-icon w-4 h-4 text-brand-600 dark:text-brand-400" viewBox="0 0 24 24">
+              <path d="M3 3v5h5" />
+              <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" />
+              <path d="M12 7v5l4 2" />
+            </svg> Full Purchase History Log (<span id="modal-history-count">0</span> Invoices)
+          </h4>
+          <span class="text-[11px] text-gray-500">Sorted by most recent</span>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-white/10">
+          <table class="w-full text-left text-xs">
+            <thead class="text-gray-500 dark:text-gray-400 bg-slate-100 dark:bg-slate-900 uppercase font-semibold">
+              <tr>
+                <th class="py-2.5 px-3">Invoice No</th>
+                <th class="py-2.5 px-3">Sales Date</th>
+                <th class="py-2.5 px-3">Branch</th>
+                <th class="py-2.5 px-3">Products & Quantities</th>
+                <th class="py-2.5 px-3">Staff</th>
+                <th class="py-2.5 px-3 text-right">Net Payable</th>
+              </tr>
+            </thead>
+            <tbody id="modal-purchases-table-body"
+              class="divide-y divide-slate-200 dark:divide-white/10 text-gray-700 dark:text-gray-300 font-mono">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 bg-slate-100 dark:bg-slate-900 border-t border-slate-200 dark:border-white/10 flex justify-end">
+        <button onclick="closeCustomerModal()"
+          class="px-5 py-2 rounded-xl text-xs font-bold bg-slate-200 dark:bg-gray-800 text-gray-800 dark:text-white">Close</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =============================================================== -->
+  <!-- MODAL: ADD NEW BRANCH                                           -->
+  <!-- =============================================================== -->
+  <div id="add-branch-modal" onclick="if(event.target === this) closeAddBranchModal()"
+    class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
+    style="display: none;">
+    <div class="glass-panel w-full max-w-md p-6 rounded-3xl shadow-2xl space-y-4" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <svg class="svg-icon w-5 h-5 text-brand-500" viewBox="0 0 24 24">
+            <line x1="6" x2="6" y1="3" y2="15" />
+            <circle cx="18" cy="6" r="3" />
+            <circle cx="6" cy="18" r="3" />
+            <path d="M18 9a9 9 0 0 1-9 9" />
+          </svg> Add Store Branch
+        </h3>
+        <button onclick="closeAddBranchModal()" class="text-gray-400 hover:text-gray-700 dark:hover:text-white">
+          <svg class="svg-icon w-5 h-5" viewBox="0 0 24 24">
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+      </div>
+      <div>
+        <label class="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">Branch Name</label>
+        <input type="text" id="add-branch-name-input" placeholder="e.g. Dhanmondi Outlet or Gulshan Branch"
+          class="glass-input w-full text-xs p-2.5 rounded-xl font-semibold">
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeAddBranchModal()"
+          class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">Cancel</button>
+        <button onclick="submitNewBranch()"
+          class="px-5 py-2 rounded-xl text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white">Create
+          Branch</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================================== -->
+  <!-- MODAL: EDIT / RENAME BRANCH                                     -->
+  <!-- =============================================================== -->
+  <div id="edit-branch-modal" onclick="if(event.target === this) closeEditBranchModal()"
+    class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
+    style="display: none;">
+    <div class="glass-panel w-full max-w-md p-6 rounded-3xl shadow-2xl space-y-4" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <svg class="svg-icon w-5 h-5 text-indigo-500" viewBox="0 0 24 24">
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+          </svg> Edit / Rename Branch
+        </h3>
+        <button onclick="closeEditBranchModal()" class="text-gray-400 hover:text-gray-700 dark:hover:text-white">
+          <svg class="svg-icon w-5 h-5" viewBox="0 0 24 24">
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+      </div>
+      <input type="hidden" id="edit-branch-old-name">
+      <div>
+        <label class="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">Current Branch Name</label>
+        <div id="edit-branch-current-display"
+          class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 text-xs font-mono font-bold text-gray-600 dark:text-gray-300 mb-3 border border-slate-200 dark:border-white/10">
+          -</div>
+
+        <label class="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">New Branch Name</label>
+        <input type="text" id="edit-branch-new-name-input" placeholder="Enter updated branch name"
+          class="glass-input w-full text-xs p-2.5 rounded-xl font-semibold">
+        <p class="text-[11px] text-gray-500 mt-1">Renaming updates settings, transaction logs, and customer profiles
+          across the entire system.</p>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeEditBranchModal()"
+          class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">Cancel</button>
+        <button onclick="submitEditBranch()"
+          class="px-5 py-2 rounded-xl text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white">Save
+          Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================================== -->
+  <!-- MODAL: DELETE BRANCH CONFIRMATION (CASCADING DATA PURGE)        -->
+  <!-- =============================================================== -->
+  <div id="delete-branch-modal" onclick="if(event.target === this) closeDeleteBranchModal()"
+    class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in"
+    style="display: none;">
+    <div class="glass-panel w-full max-w-md p-6 rounded-3xl shadow-2xl space-y-4 border border-rose-500/40"
+      onclick="event.stopPropagation()">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center font-bold">
+          <svg class="svg-icon w-6 h-6 text-rose-500" viewBox="0 0 24 24">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+            <line x1="12" x2="12" y1="9" y2="13" />
+            <line x1="12" x2="12.01" y1="17" y2="17" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-gray-900 dark:text-white">Delete Branch & All Data</h3>
+          <p class="text-xs text-rose-500 font-semibold">Permanent Cascading Deletion</p>
+        </div>
+      </div>
+      <input type="hidden" id="delete-branch-target-name">
+      <p class="text-xs text-gray-600 dark:text-gray-300">
+        Are you sure you want to delete branch <strong id="delete-branch-name-text"
+          class="text-rose-600 dark:text-rose-400 font-mono"></strong>?
+      </p>
+      <div
+        class="p-3.5 bg-rose-500/10 rounded-xl border border-rose-500/30 text-xs text-rose-700 dark:text-rose-300 space-y-1">
+        <p class="font-bold flex items-center gap-1"><svg class="svg-icon w-4 h-4 text-amber-500" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg> Caution:</p>
+        <ul class="list-disc list-inside space-y-0.5 text-[11px]">
+          <li>All invoices and transactions for this branch will be purged.</li>
+          <li>Customer lifetime spend and metrics will be recalculated.</li>
+          <li>This action cannot be undone.</li>
+        </ul>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeDeleteBranchModal()"
+          class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">Cancel</button>
+        <button onclick="confirmDeleteBranchWithData()"
+          class="px-5 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30">Permanently
+          Delete Branch</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================================== -->
+  <!-- MODAL: EDIT BRANCH PASSWORD (ADMIN ACCESS ONLY)                 -->
+  <!-- =============================================================== -->
+  <div id="edit-branch-password-modal" onclick="if(event.target === this) closeEditBranchPasswordModal()"
+    class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
+    style="display: none;">
+    <div
+      class="glass-panel w-full max-w-md p-6 rounded-3xl shadow-2xl space-y-4 border border-slate-300 dark:border-white/10"
+      onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/10">
+        <h3 class="font-bold text-base text-gray-900 dark:text-white flex items-center gap-2">
+          <svg class="svg-icon w-4 h-4 text-brand-500" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg> Change Branch Password
+        </h3>
+        <button onclick="closeEditBranchPasswordModal()"
+          class="text-gray-400 hover:text-gray-600 dark:hover:text-white p-1 rounded"><svg class="svg-icon w-4 h-4" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div>
+        <label class="text-xs text-gray-500 font-semibold block mb-1">Target Branch</label>
+        <div id="edit-pw-branch-name" class="font-bold text-sm text-brand-600 dark:text-indigo-300 py-1 font-mono">
+          Gulshan Outlet</div>
+        <input type="hidden" id="edit-pw-branch-target">
+      </div>
+      <div>
+        <label class="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">New Branch Password</label>
+        <div class="relative">
+          <input type="text" id="edit-branch-password-input" placeholder="e.g. gulshanoutlet19"
+            class="glass-input text-xs w-full py-2.5 pl-3 pr-16 rounded-xl font-mono font-bold">
+          <button type="button" onclick="autoGenerateInModal()"
+            class="absolute right-2 top-2 px-2.5 py-1 bg-slate-200 dark:bg-white/10 hover:bg-brand-600 hover:text-white text-[10px] rounded-lg font-bold transition-all"
+            title="Auto-generate password">
+            Auto
+          </button>
+        </div>
+        <p class="text-[10px] text-gray-500 mt-1">Rule: lowercase branch name + 2 digits (e.g. gulshanoutlet19)</p>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeEditBranchPasswordModal()"
+          class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">Cancel</button>
+        <button onclick="submitEditBranchPassword()"
+          class="px-5 py-2 rounded-xl text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white shadow">Save
+          Password</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast"
+    class="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50 hidden px-4 py-3 rounded-2xl glass-panel text-xs font-semibold shadow-2xl flex items-center gap-2.5 animate-fade-in border border-slate-300 dark:border-white/10">
+    <span id="toast-icon" class="flex items-center"><svg class="svg-icon w-4 h-4 text-brand-500" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg></span>
+    <span id="toast-msg">Notification message</span>
+  </div>
+
+  <!-- =============================================================== -->
+  <!-- MOBILE BOTTOM NAVIGATION BAR (OPTIMIZED FOR 20:9 TALL PHONES)   -->
+  <!-- =============================================================== -->
+  <nav
+    class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-white/10 px-2 py-1 pb-[max(0.6rem,env(safe-area-inset-bottom))] shadow-2xl flex items-center justify-around">
+    <!-- Dashboard -->
+    <button onclick="switchTab('dashboard')" id="mob-nav-dashboard"
+      class="mobile-nav-btn flex flex-col items-center justify-center py-1 px-2 rounded-xl text-[10px] font-bold transition-all text-brand-600 dark:text-brand-400 bg-brand-500/10 min-w-[56px] min-h-[44px]">
+      <svg class="svg-icon w-5 h-5 mb-0.5" viewBox="0 0 24 24">
+        <rect width="7" height="9" x="3" y="3" rx="1" />
+        <rect width="7" height="5" x="14" y="3" rx="1" />
+        <rect width="7" height="9" x="14" y="12" rx="1" />
+        <rect width="7" height="5" x="3" y="16" rx="1" />
+      </svg>
+      <span>Dashboard</span>
+    </button>
+
+    <!-- Customers -->
+    <button onclick="switchTab('customers')" id="mob-nav-customers"
+      class="mobile-nav-btn flex flex-col items-center justify-center py-1 px-2 rounded-xl text-[10px] font-medium transition-all text-gray-500 dark:text-gray-400 min-w-[56px] min-h-[44px]">
+      <svg class="svg-icon w-5 h-5 mb-0.5" viewBox="0 0 24 24">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+      <span>Customers</span>
+    </button>
+
+    <!-- Import -->
+    <button onclick="switchTab('import')" id="mob-nav-import"
+      class="mobile-nav-btn flex flex-col items-center justify-center py-1 px-2 rounded-xl text-[10px] font-medium transition-all text-gray-500 dark:text-gray-400 min-w-[56px] min-h-[44px]">
+      <svg class="svg-icon w-5 h-5 mb-0.5" viewBox="0 0 24 24">
+        <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+        <path d="M12 12v9" />
+        <path d="m16 16-4-4-4 4" />
+      </svg>
+      <span>Import</span>
+    </button>
+
+    <!-- Branches -->
+    <button onclick="switchTab('branches')" id="mob-nav-branches"
+      class="mobile-nav-btn flex flex-col items-center justify-center py-1 px-2 rounded-xl text-[10px] font-medium transition-all text-gray-500 dark:text-gray-400 min-w-[56px] min-h-[44px]">
+      <svg class="svg-icon w-5 h-5 mb-0.5" viewBox="0 0 24 24">
+        <line x1="6" x2="6" y1="3" y2="15" />
+        <circle cx="18" cy="6" r="3" />
+        <circle cx="6" cy="18" r="3" />
+        <path d="M18 9a9 9 0 0 1-9 9" />
+      </svg>
+      <span>Branches</span>
+    </button>
+
+    <!-- Delete -->
+    <button onclick="switchTab('delete')" id="mob-nav-delete"
+      class="mobile-nav-btn flex flex-col items-center justify-center py-1 px-2 rounded-xl text-[10px] font-medium transition-all text-rose-500 dark:text-rose-400 min-w-[56px] min-h-[44px]">
+      <svg class="svg-icon w-5 h-5 mb-0.5" viewBox="0 0 24 24">
+        <path d="M3 6h18" />
+        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+      </svg>
+      <span>Delete</span>
+    </button>
+
+    <!-- Settings -->
+    <button onclick="switchTab('settings')" id="mob-nav-settings"
+      class="mobile-nav-btn flex flex-col items-center justify-center py-1 px-2 rounded-xl text-[10px] font-medium transition-all text-gray-500 dark:text-gray-400 min-w-[56px] min-h-[44px]">
+      <svg class="svg-icon w-5 h-5 mb-0.5" viewBox="0 0 24 24">
+        <path
+          d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+      <span>Settings</span>
+    </button>
+  </nav>
+
+  <!-- =============================================================== -->
+  <!-- JAVASCRIPT APPLICATION LOGIC                                    -->
+  <!-- =============================================================== -->
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+InvoiceNo,Date,CustomerName,Phone,CustomerId,Branch,GrossAmount,Discount,NetAmount,PaymentMode,Items
+INV-2026-101,2026-08-19,Tanvir Ahmed,01711998877,CUST-1001,Main Branch,5500,500,5000,Credit Card,Premium Cotton Formal Shirt + Chino Pants
+INV-2026-102,2026-08-19,Nusrat Jahan,01822334455,CUST-1002,Gulshan Outlet,14200,1200,13000,bKash,Designer Silk Saree + Embroidered Dupatta
+INV-2026-103,2026-08-18,Rafiqul Islam,01933445566,CUST-1003,Dhanmondi Outlet,3200,0,3200,Cash,Casual Denim Jeans
+INV-2026-104,2026-08-18,Sadia Rahman,01644556677,CUST-1004,Uttara Outlet,6800,300,6500,POS Card,Party Lawn Kurti + Palazzos
+INV-2026-105,2026-08-17,Farhan Chowdhury,01755667788,CUST-1005,Main Branch,2800,0,2800,bKash,Polo T-Shirt + Leather Belt
+INV-2026-106,2026-08-16,Tanvir Ahmed,01711998877,CUST-1001,Dhanmondi Outlet,8500,500,8000,Credit Card,Embroidered Semi-Formal Panjabi
+INV-2026-107,2026-08-15,Mahmudul Hasan,01977889900,CUST-1007,Gulshan Outlet,18500,1500,17000,Credit Card,Tailored Linen 2-Piece Blazer Suit
+INV-2026-108,2026-08-14,Tasnim Ferdous,01588990011,CUST-1008,Uttara Outlet,4200,200,4000,Nagad,Floral Maxi Dress
+INV-2026-109,2026-08-12,Nusrat Jahan,01822334455,CUST-1002,Main Branch,9800,800,9000,bKash,Silk Kurti + Designer Scarf
+INV-2026-110,2026-08-10,Kazi Shakil,01799001122,CUST-1009,Online Store,1900,0,1900,Cash on Delivery,Casual Cotton T-Shirt
+INV-2026-111,2026-07-28,Anika Tabassum,01866778899,CUST-1006,Dhanmondi Outlet,11500,1000,10500,POS Card,Festive Embroidered Lehenga
+INV-2026-112,2026-07-25,Rafiqul Islam,01933445566,CUST-1003,Main Branch,4600,0,4600,Cash,Casual Linen Shirt + Chinos
+INV-2026-113,2026-07-20,Sadia Rahman,01644556677,CUST-1004,Gulshan Outlet,5900,400,5500,bKash,Casual Kurti Set
+INV-2026-114,2026-07-15,Tanvir Ahmed,01711998877,CUST-1001,Main Branch,7200,0,7200,Credit Card,Formal Trousers + Slim Shirt
+INV-2026-115,2026-06-25,Meherun Nesa,01811223344,CUST-1010,Uttara Outlet,3400,0,3400,Nagad,Casual Kurti
+INV-2026-116,2026-06-18,Mahmudul Hasan,01977889900,CUST-1007,Main Branch,12000,1000,11000,Credit Card,Premium Designer Panjabi
+INV-2026-117,2026-05-10,Anika Tabassum,01866778899,CUST-1006,Gulshan Outlet,9500,500,9000,bKash,Silk Party Gown
