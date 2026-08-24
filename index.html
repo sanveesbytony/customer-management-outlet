@@ -87,12 +87,23 @@
         class="grid grid-cols-2 p-1 bg-slate-100 dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-white/10 gap-1">
         <button type="button" onclick="switchLoginMode('branch')" id="tab-login-branch"
           class="py-2.5 rounded-xl text-xs font-bold transition-all bg-brand-600 text-white shadow flex items-center justify-center gap-1.5 cursor-pointer select-none">
-          <svg class="svg-icon w-4 h-4 pointer-events-none" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M19 21v-4"/><path d="M19 17a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v4"/><path d="M9 10h1"/><path d="M14 10h1"/><path d="M9 14h1"/><path d="M14 14h1"/><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg>
+          <svg class="svg-icon w-4 h-4 pointer-events-none" viewBox="0 0 24 24">
+            <path d="M3 21h18" />
+            <path d="M19 21v-4" />
+            <path d="M19 17a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v4" />
+            <path d="M9 10h1" />
+            <path d="M14 10h1" />
+            <path d="M9 14h1" />
+            <path d="M14 14h1" />
+            <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" />
+          </svg>
           <span class="pointer-events-none">Branch Login</span>
         </button>
         <button type="button" onclick="switchLoginMode('admin')" id="tab-login-admin"
           class="py-2.5 rounded-xl text-xs font-bold transition-all text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center justify-center gap-1.5 cursor-pointer select-none">
-          <svg class="svg-icon w-4 h-4 pointer-events-none" viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5 1 6.5L12 17l-5.5 3 1-6.5L3 9l6-1z"/></svg>
+          <svg class="svg-icon w-4 h-4 pointer-events-none" viewBox="0 0 24 24">
+            <path d="M12 2l3 6 6 1-4.5 4.5 1 6.5L12 17l-5.5 3 1-6.5L3 9l6-1z" />
+          </svg>
           <span class="pointer-events-none">Admin Login</span>
         </button>
       </div>
@@ -118,7 +129,8 @@
               <circle cx="6" cy="18" r="3" />
               <path d="M18 9a9 9 0 0 1-9 9" />
             </svg>
-            <svg class="svg-icon w-4 h-4 text-gray-400 absolute right-3.5 top-3.5 pointer-events-none" viewBox="0 0 24 24">
+            <svg class="svg-icon w-4 h-4 text-gray-400 absolute right-3.5 top-3.5 pointer-events-none"
+              viewBox="0 0 24 24">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </div>
@@ -128,7 +140,10 @@
         <div id="login-branch-blocked-banner"
           class="hidden p-3.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-bold space-y-1 animate-fade-in">
           <div class="flex items-center gap-1.5">
-            <svg class="svg-icon w-4 h-4 text-rose-500" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg>
+            <svg class="svg-icon w-4 h-4 text-rose-500" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" />
+              <path d="m4.9 4.9 14.2 14.2" />
+            </svg>
             <span>Branch Access Blocked</span>
           </div>
           <p class="text-[11px] font-normal text-rose-500/90 dark:text-rose-300">This branch has been blocked due to 5
@@ -151,7 +166,10 @@
             <button type="button" onclick="togglePasswordVisibility('login-branch-password', 'eye-branch-icon')"
               class="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-white p-0.5"
               title="Show/Hide Password">
-              <svg id="eye-branch-icon" class="svg-icon w-4 h-4" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg id="eye-branch-icon" class="svg-icon w-4 h-4" viewBox="0 0 24 24">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
             </button>
           </div>
         </div>
@@ -168,9 +186,13 @@
       <!-- Mode 2: Admin Login Form (Specific Credentials) -->
       <form id="admin-login-form" onsubmit="event.preventDefault(); handleAdminLoginSubmit();" class="hidden space-y-4">
 
-        <div class="p-3.5 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-500/30 text-xs text-indigo-900 dark:text-indigo-200 space-y-1">
+        <div
+          class="p-3.5 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-500/30 text-xs text-indigo-900 dark:text-indigo-200 space-y-1">
           <div class="flex items-center gap-2 font-bold text-brand-600 dark:text-indigo-400">
-            <svg class="svg-icon w-4 h-4 text-indigo-500" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            <svg class="svg-icon w-4 h-4 text-indigo-500" viewBox="0 0 24 24">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
             <span>Super Administrator Authentication</span>
           </div>
           <p class="text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -179,9 +201,11 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">Admin Username / Email</label>
+          <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">Admin
+            Username / Email</label>
           <div class="relative">
-            <input type="text" id="login-admin-username" placeholder="e.g. admin or admin@pos2in.com" value="admin" autocomplete="username"
+            <input type="text" id="login-admin-username" placeholder="e.g. admin or admin@pos2in.com" value="admin"
+              autocomplete="username"
               class="glass-input w-full py-2.5 pl-10 pr-4 rounded-xl text-xs font-bold placeholder-gray-400 text-gray-900 dark:text-white">
             <svg class="svg-icon w-4 h-4 text-purple-500 absolute left-3.5 top-3.5" viewBox="0 0 24 24">
               <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
@@ -192,10 +216,12 @@
 
         <div>
           <div class="flex items-center justify-between mb-1.5">
-            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Admin Password</label>
+            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Admin
+              Password</label>
           </div>
           <div class="relative">
-            <input type="password" id="login-admin-password" placeholder="Enter admin password..." autocomplete="current-password"
+            <input type="password" id="login-admin-password" placeholder="Enter admin password..."
+              autocomplete="current-password"
               class="glass-input w-full py-2.5 pl-10 pr-10 rounded-xl text-xs font-mono font-bold placeholder-gray-400 text-gray-900 dark:text-white">
             <svg class="svg-icon w-4 h-4 text-purple-500 absolute left-3.5 top-3.5" viewBox="0 0 24 24">
               <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
@@ -204,13 +230,17 @@
             <button type="button" onclick="togglePasswordVisibility('login-admin-password', 'eye-admin-icon')"
               class="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-white p-0.5"
               title="Show/Hide Password">
-              <svg id="eye-admin-icon" class="svg-icon w-4 h-4" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg id="eye-admin-icon" class="svg-icon w-4 h-4" viewBox="0 0 24 24">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
             </button>
           </div>
         </div>
 
         <div class="flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400 px-1">
-          <span>Default: <span class="font-mono font-bold text-purple-600 dark:text-purple-300">admin</span> / <span class="font-mono font-bold text-purple-600 dark:text-purple-300">pos2in@admin2026</span></span>
+          <span>Default: <span class="font-mono font-bold text-purple-600 dark:text-purple-300">admin</span> / <span
+              class="font-mono font-bold text-purple-600 dark:text-purple-300">pos2in@admin2026</span></span>
         </div>
 
         <button type="submit" id="btn-admin-login-submit"
@@ -324,7 +354,17 @@
           <!-- User Role / Branch Badge -->
           <div id="header-auth-badge"
             class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/10 border border-slate-300 dark:border-white/10 text-xs font-bold text-gray-800 dark:text-white whitespace-nowrap flex-shrink-0">
-            <span id="header-auth-role-icon" class="flex items-center"><svg class="svg-icon w-3.5 h-3.5" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M19 21v-4"/><path d="M19 17a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v4"/><path d="M9 10h1"/><path d="M14 10h1"/><path d="M9 14h1"/><path d="M14 14h1"/><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg></span>
+            <span id="header-auth-role-icon" class="flex items-center"><svg class="svg-icon w-3.5 h-3.5"
+                viewBox="0 0 24 24">
+                <path d="M3 21h18" />
+                <path d="M19 21v-4" />
+                <path d="M19 17a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v4" />
+                <path d="M9 10h1" />
+                <path d="M14 10h1" />
+                <path d="M9 14h1" />
+                <path d="M14 14h1" />
+                <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" />
+              </svg></span>
             <span id="header-auth-name" class="max-w-[100px] sm:max-w-[140px] truncate">Main Branch</span>
           </div>
 
@@ -628,7 +668,9 @@
               <p class="text-xs text-gray-400 font-medium">No sales recorded yet.</p>
               <button onclick="switchTab('import')"
                 class="mt-2 text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline">Import POS2IN Data
-                <svg class="svg-icon w-3 h-3 inline ml-0.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+                <svg class="svg-icon w-3 h-3 inline ml-0.5" viewBox="0 0 24 24">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg></button>
             </div>
           </div>
         </div>
@@ -691,7 +733,9 @@
             </div>
             <button onclick="switchTab('customers')"
               class="text-xs text-brand-600 dark:text-brand-400 hover:underline font-bold flex items-center gap-1">
-              View All Directory <svg class="svg-icon w-3 h-3 inline" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+              View All Directory <svg class="svg-icon w-3 h-3 inline" viewBox="0 0 24 24">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
             </button>
           </div>
           <div class="overflow-x-auto">
@@ -890,7 +934,10 @@
               <button onclick="clearCustomerDateFilter()" id="btn-clear-customer-date"
                 class="hidden px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-bold transition-all flex items-center gap-1 flex-shrink-0"
                 title="Reset Date Range Filter">
-                <svg class="svg-icon w-3 h-3" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Clear
+                <svg class="svg-icon w-3 h-3" viewBox="0 0 24 24">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg> Clear
               </button>
             </div>
           </div>
@@ -899,7 +946,12 @@
           <div id="customer-date-filter-indicator"
             class="hidden flex items-center justify-between bg-brand-500/10 border border-brand-500/30 text-brand-600 dark:text-brand-300 px-3.5 py-2 rounded-xl text-xs font-semibold animate-fade-in">
             <div class="flex items-center gap-2">
-              <svg class="svg-icon w-3.5 h-3.5 text-brand-500" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+              <svg class="svg-icon w-3.5 h-3.5 text-brand-500" viewBox="0 0 24 24">
+                <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                <line x1="16" x2="16" y1="2" y2="6" />
+                <line x1="8" x2="8" y1="2" y2="6" />
+                <line x1="3" x2="21" y1="10" y2="10" />
+              </svg>
               <span id="customer-date-filter-text">Active Date Filter</span>
             </div>
             <button onclick="clearCustomerDateFilter()"
@@ -914,10 +966,36 @@
           <button onclick="setTierFilter('ALL')"
             class="tier-filter-chip active px-3 py-1 rounded-full text-xs font-semibold bg-brand-600 text-white"
             data-tier="ALL">All (<span id="count-tier-all">0</span>)</button>
-          <button onclick="setTierFilter('VIP')" class="tier-filter-chip px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/30 hover:bg-amber-500/20 flex items-center gap-1.5" data-tier="VIP"><svg class="w-3.5 h-3.5 text-amber-500" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> VIP (<span id="count-tier-vip">0</span>)</button>
-          <button onclick="setTierFilter('REGULAR')" class="tier-filter-chip px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/20 flex items-center gap-1.5" data-tier="REGULAR"><svg class="w-3.5 h-3.5 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg> Regular (<span id="count-tier-regular">0</span>)</button>
-          <button onclick="setTierFilter('NEW')" class="tier-filter-chip px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/20 flex items-center gap-1.5" data-tier="NEW"><svg class="w-3.5 h-3.5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg> New (<span id="count-tier-new">0</span>)</button>
-          <button onclick="setTierFilter('AT_RISK')" class="tier-filter-chip px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 flex items-center gap-1.5" data-tier="AT_RISK"><svg class="w-3.5 h-3.5 text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg> At-Risk (<span id="count-tier-atrisk">0</span>)</button>
+          <button onclick="setTierFilter('VIP')"
+            class="tier-filter-chip px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/30 hover:bg-amber-500/20 flex items-center gap-1.5"
+            data-tier="VIP"><svg class="w-3.5 h-3.5 text-amber-500" viewBox="0 0 24 24" fill="currentColor">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg> VIP (<span id="count-tier-vip">0</span>)</button>
+          <button onclick="setTierFilter('REGULAR')"
+            class="tier-filter-chip px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/20 flex items-center gap-1.5"
+            data-tier="REGULAR"><svg class="w-3.5 h-3.5 text-indigo-500" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path
+                d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z" />
+            </svg> Regular (<span id="count-tier-regular">0</span>)</button>
+          <button onclick="setTierFilter('NEW')"
+            class="tier-filter-chip px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/20 flex items-center gap-1.5"
+            data-tier="NEW"><svg class="w-3.5 h-3.5 text-emerald-500" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <line x1="19" x2="19" y1="8" y2="14" />
+              <line x1="22" x2="16" y1="11" y2="11" />
+            </svg> New (<span id="count-tier-new">0</span>)</button>
+          <button onclick="setTierFilter('AT_RISK')"
+            class="tier-filter-chip px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 flex items-center gap-1.5"
+            data-tier="AT_RISK"><svg class="w-3.5 h-3.5 text-rose-500" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" x2="12" y1="8" y2="12" />
+              <line x1="12" x2="12.01" y1="16" y2="16" />
+            </svg> At-Risk (<span id="count-tier-atrisk">0</span>)</button>
 
           <div class="ml-auto flex items-center gap-2">
             <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold">Branch:</span>
@@ -1442,7 +1520,8 @@
             </div>
 
             <div>
-              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">VIP Champion Spend Threshold</label>
+              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">VIP Champion Spend
+                Threshold</label>
               <div class="flex items-center gap-2">
                 <input type="number" id="setting-vip" value="15000"
                   class="glass-input text-xs px-3 py-2 rounded-lg w-48 font-mono font-bold">
@@ -1451,7 +1530,8 @@
             </div>
 
             <div>
-              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">Loyal Regular Spend Threshold</label>
+              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">Loyal Regular Spend
+                Threshold</label>
               <div class="flex items-center gap-2">
                 <input type="number" id="setting-regular" value="5000"
                   class="glass-input text-xs px-3 py-2 rounded-lg w-48 font-mono font-bold">
@@ -1460,7 +1540,8 @@
             </div>
 
             <div>
-              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">Inactive / At-Risk Days Threshold</label>
+              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">Inactive / At-Risk Days
+                Threshold</label>
               <div class="flex items-center gap-2">
                 <input type="number" id="setting-inactive" value="60"
                   class="glass-input text-xs px-3 py-2 rounded-lg w-48 font-mono font-bold">
@@ -1488,17 +1569,24 @@
               <path d="M3 12A9 3 0 0 0 21 12" />
             </svg> Cloud Database Summary
           </h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400">All customer records and settings sync live with Google Firebase Cloud. 100% serverless cloud backend ready for GitHub Pages.</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">All customer records and settings sync live with Google
+            Firebase Cloud. 100% serverless cloud backend ready for GitHub Pages.</p>
 
-          <div class="bg-slate-50 dark:bg-slate-900/70 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-2 text-xs font-mono">
-            <div class="flex justify-between"><span class="text-gray-500">Storage Engine:</span> <span class="text-indigo-500 font-bold">Google Firebase Cloud (RTDB & Firestore)</span></div>
-            <div class="flex justify-between"><span class="text-gray-500">Customer Data:</span> <span class="text-emerald-500 font-bold">customers/ collection (Real-Time Cloud)</span></div>
-            <div class="flex justify-between"><span class="text-gray-500">Settings Storage:</span> <span class="text-indigo-600 dark:text-indigo-300 font-bold">settings/ (Firebase Cloud Database)</span></div>
-            <div class="flex justify-between"><span class="text-gray-500">Sync Latency:</span> <span class="text-emerald-400 font-semibold">Sub-50ms Real-Time Live Sync</span></div>
+          <div
+            class="bg-slate-50 dark:bg-slate-900/70 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-2 text-xs font-mono">
+            <div class="flex justify-between"><span class="text-gray-500">Storage Engine:</span> <span
+                class="text-indigo-500 font-bold">Google Firebase Cloud (RTDB & Firestore)</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Customer Data:</span> <span
+                class="text-emerald-500 font-bold">customers/ collection (Real-Time Cloud)</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Settings Storage:</span> <span
+                class="text-indigo-600 dark:text-indigo-300 font-bold">settings/ (Firebase Cloud Database)</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Sync Latency:</span> <span
+                class="text-emerald-400 font-semibold">Sub-50ms Real-Time Live Sync</span></div>
           </div>
 
           <div class="pt-2 space-y-3">
-            <h4 class="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Database Maintenance</h4>
+            <h4 class="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Database Maintenance
+            </h4>
             <div class="flex flex-wrap items-center gap-2">
               <button onclick="exportFullDatabaseJson()"
                 class="px-3.5 py-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-gray-800 dark:text-gray-300 rounded-lg text-xs font-semibold border border-slate-300 dark:border-white/10 flex items-center gap-1.5">
@@ -1525,37 +1613,43 @@
             <div>
               <div class="flex items-center gap-2">
                 <svg class="svg-icon w-5 h-5 text-purple-500" viewBox="0 0 24 24">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                  <path d="m9 12 2 2 4-4"/>
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <path d="m9 12 2 2 4-4" />
                 </svg>
                 <h3 class="text-base font-bold text-gray-900 dark:text-white">
                   Super Admin Credentials & Master Security
                 </h3>
               </div>
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Customize specific master credentials for Super Admin login. Stored securely in your Firebase Cloud Database.
+                Customize specific master credentials for Super Admin login. Stored securely in your Firebase Cloud
+                Database.
               </p>
             </div>
-            <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-600 dark:text-purple-300 text-xs font-mono font-bold">
+            <div
+              class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-600 dark:text-purple-300 text-xs font-mono font-bold">
               <span>Active Admin:</span>
               <span id="current-admin-display-username">admin</span>
             </div>
           </div>
 
-          <form onsubmit="event.preventDefault(); updateAdminCredentials();" class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          <form onsubmit="event.preventDefault(); updateAdminCredentials();"
+            class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
             <div>
-              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">Admin Username / Email</label>
+              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">Admin Username /
+                Email</label>
               <div class="relative">
-                <input type="text" id="setting-admin-username" placeholder="e.g. admin or admin@pos2in.com" value="admin"
-                  class="glass-input text-xs px-3 py-2.5 pl-9 rounded-xl w-full font-mono font-bold">
+                <input type="text" id="setting-admin-username" placeholder="e.g. admin or admin@pos2in.com"
+                  value="admin" class="glass-input text-xs px-3 py-2.5 pl-9 rounded-xl w-full font-mono font-bold">
                 <svg class="svg-icon w-4 h-4 text-purple-500 absolute left-2.5 top-3" viewBox="0 0 24 24">
-                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
                 </svg>
               </div>
             </div>
 
             <div>
-              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">New Admin Password</label>
+              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">New Admin
+                Password</label>
               <div class="relative">
                 <input type="password" id="setting-admin-new-pw" placeholder="Enter new password..."
                   class="glass-input text-xs px-3 py-2.5 pl-9 pr-8 rounded-xl w-full font-mono font-bold">
@@ -1566,30 +1660,40 @@
                 <button type="button" onclick="togglePasswordVisibility('setting-admin-new-pw', 'eye-set-admin-new')"
                   class="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-white p-0.5"
                   title="Show/Hide Password">
-                  <svg id="eye-set-admin-new" class="svg-icon w-3.5 h-3.5" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg id="eye-set-admin-new" class="svg-icon w-3.5 h-3.5" viewBox="0 0 24 24">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
                 </button>
               </div>
             </div>
 
             <div>
-              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">Confirm New Password</label>
+              <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 block mb-1">Confirm New
+                Password</label>
               <div class="relative">
                 <input type="password" id="setting-admin-confirm-pw" placeholder="Re-type new password..."
                   class="glass-input text-xs px-3 py-2.5 pl-9 pr-8 rounded-xl w-full font-mono font-bold">
                 <svg class="svg-icon w-4 h-4 text-purple-500 absolute left-2.5 top-3" viewBox="0 0 24 24">
-                  <polyline points="20 6 9 17 4 12"/>
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
-                <button type="button" onclick="togglePasswordVisibility('setting-admin-confirm-pw', 'eye-set-admin-confirm')"
+                <button type="button"
+                  onclick="togglePasswordVisibility('setting-admin-confirm-pw', 'eye-set-admin-confirm')"
                   class="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-white p-0.5"
                   title="Show/Hide Password">
-                  <svg id="eye-set-admin-confirm" class="svg-icon w-3.5 h-3.5" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg id="eye-set-admin-confirm" class="svg-icon w-3.5 h-3.5" viewBox="0 0 24 24">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
                 </button>
               </div>
             </div>
 
             <div class="md:col-span-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
               <span class="text-[11px] text-gray-500 dark:text-gray-400">
-                Default master credentials: <code class="font-mono text-purple-600 dark:text-purple-300 font-bold">admin</code> / <code class="font-mono text-purple-600 dark:text-purple-300 font-bold">pos2in@admin2026</code>
+                Default master credentials: <code
+                  class="font-mono text-purple-600 dark:text-purple-300 font-bold">admin</code> / <code
+                  class="font-mono text-purple-600 dark:text-purple-300 font-bold">pos2in@admin2026</code>
               </span>
               <button type="submit"
                 class="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-95 text-white flex items-center gap-2 shadow-md shadow-purple-500/25">
@@ -1610,36 +1714,46 @@
             <div>
               <div class="flex items-center gap-2">
                 <svg class="svg-icon w-5 h-5 text-indigo-500" viewBox="0 0 24 24">
-                  <ellipse cx="12" cy="5" rx="9" ry="3"/>
-                  <path d="M3 5V19A9 3 0 0 0 21 19V5"/>
-                  <path d="M3 12A9 3 0 0 0 21 12"/>
+                  <ellipse cx="12" cy="5" rx="9" ry="3" />
+                  <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+                  <path d="M3 12A9 3 0 0 0 21 12" />
                 </svg>
                 <h3 class="text-base font-bold text-gray-900 dark:text-white">
-                  Google Firebase Cloud Database <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 font-mono font-semibold">Real-Time Cloud Storage</span>
+                  Google Firebase Cloud Database <span
+                    class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 font-mono font-semibold">Real-Time
+                    Cloud Storage</span>
                 </h3>
               </div>
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                All customer records, settings, and branch security are synchronized live in Google Cloud Firebase with sub-50ms latency.
+                All customer records, settings, and branch security are synchronized live in Google Cloud Firebase with
+                sub-50ms latency.
               </p>
             </div>
-            <div id="firebase-status-pill" class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-300">
+            <div id="firebase-status-pill"
+              class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-300">
               <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               <span id="firebase-status-text">Connected: pos2in-customer-data</span>
             </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-            <div class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-1">
+            <div
+              class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-1">
               <span class="text-[11px] font-semibold text-gray-500 block uppercase tracking-wider">Project ID</span>
               <span class="font-mono text-xs font-bold text-brand-600 dark:text-indigo-300">pos2in-customer-data</span>
             </div>
-            <div class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-1">
-              <span class="text-[11px] font-semibold text-gray-500 block uppercase tracking-wider">Live Customer Profiles</span>
-              <span id="firestore-doc-count" class="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">Loading...</span>
+            <div
+              class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-1">
+              <span class="text-[11px] font-semibold text-gray-500 block uppercase tracking-wider">Live Customer
+                Profiles</span>
+              <span id="firestore-doc-count"
+                class="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">Loading...</span>
             </div>
-            <div class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-1">
+            <div
+              class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-1">
               <span class="text-[11px] font-semibold text-gray-500 block uppercase tracking-wider">Storage Engine</span>
-              <span class="font-mono text-xs font-bold text-gray-800 dark:text-gray-200">100% Firebase Cloud Database</span>
+              <span class="font-mono text-xs font-bold text-gray-800 dark:text-gray-200">100% Firebase Cloud
+                Database</span>
             </div>
           </div>
         </div>
@@ -1695,7 +1809,8 @@
               <div class="text-xs font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1.5 font-mono">
                 Firebase Cloud settings/
               </div>
-              <p class="text-[11px] text-gray-500">All application configurations, branches, and admin credentials are saved in Firebase Cloud.</p>
+              <p class="text-[11px] text-gray-500">All application configurations, branches, and admin credentials are
+                saved in Firebase Cloud.</p>
             </div>
           </div>
 
@@ -1741,12 +1856,24 @@
                 Champion</span>
             </div>
             <div class="flex flex-wrap items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mt-1">
-              <span class="flex items-center gap-1 font-mono font-bold text-gray-800 dark:text-gray-200"><svg class="svg-icon w-3 h-3 text-gray-400" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span
-                  id="modal-cust-phone">017XXXXXXXX</span></span>
+              <span class="flex items-center gap-1 font-mono font-bold text-gray-800 dark:text-gray-200"><svg
+                  class="svg-icon w-3 h-3 text-gray-400" viewBox="0 0 24 24">
+                  <path
+                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg><span id="modal-cust-phone">017XXXXXXXX</span></span>
               <span class="flex items-center gap-1 font-mono text-gray-500"># <span
                   id="modal-cust-id">CUST-1001</span></span>
-              <span class="flex items-center gap-1 font-semibold text-brand-600 dark:text-indigo-300"><svg class="svg-icon w-3 h-3 text-brand-500" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M19 21v-4"/><path d="M19 17a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v4"/><path d="M9 10h1"/><path d="M14 10h1"/><path d="M9 14h1"/><path d="M14 14h1"/><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg><span
-                  id="modal-cust-branch">Main Branch</span></span>
+              <span class="flex items-center gap-1 font-semibold text-brand-600 dark:text-indigo-300"><svg
+                  class="svg-icon w-3 h-3 text-brand-500" viewBox="0 0 24 24">
+                  <path d="M3 21h18" />
+                  <path d="M19 21v-4" />
+                  <path d="M19 17a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v4" />
+                  <path d="M9 10h1" />
+                  <path d="M14 10h1" />
+                  <path d="M9 14h1" />
+                  <path d="M14 14h1" />
+                  <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" />
+                </svg><span id="modal-cust-branch">Main Branch</span></span>
             </div>
           </div>
         </div>
@@ -1971,7 +2098,11 @@
       </p>
       <div
         class="p-3.5 bg-rose-500/10 rounded-xl border border-rose-500/30 text-xs text-rose-700 dark:text-rose-300 space-y-1">
-        <p class="font-bold flex items-center gap-1"><svg class="svg-icon w-4 h-4 text-amber-500" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg> Caution:</p>
+        <p class="font-bold flex items-center gap-1"><svg class="svg-icon w-4 h-4 text-amber-500" viewBox="0 0 24 24">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+            <line x1="12" x2="12" y1="9" y2="13" />
+            <line x1="12" x2="12.01" y1="17" y2="17" />
+          </svg> Caution:</p>
         <ul class="list-disc list-inside space-y-0.5 text-[11px]">
           <li>All invoices and transactions for this branch will be purged.</li>
           <li>Customer lifetime spend and metrics will be recalculated.</li>
@@ -1999,10 +2130,18 @@
       onclick="event.stopPropagation()">
       <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/10">
         <h3 class="font-bold text-base text-gray-900 dark:text-white flex items-center gap-2">
-          <svg class="svg-icon w-4 h-4 text-brand-500" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg> Change Branch Password
+          <svg class="svg-icon w-4 h-4 text-brand-500" viewBox="0 0 24 24">
+            <circle cx="7.5" cy="15.5" r="5.5" />
+            <path d="m21 2-9.6 9.6" />
+            <path d="m15.5 7.5 3 3L22 7l-3-3" />
+          </svg> Change Branch Password
         </h3>
         <button onclick="closeEditBranchPasswordModal()"
-          class="text-gray-400 hover:text-gray-600 dark:hover:text-white p-1 rounded"><svg class="svg-icon w-4 h-4" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          class="text-gray-400 hover:text-gray-600 dark:hover:text-white p-1 rounded"><svg class="svg-icon w-4 h-4"
+            viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg></button>
       </div>
       <div>
         <label class="text-xs text-gray-500 font-semibold block mb-1">Target Branch</label>
@@ -2036,7 +2175,11 @@
   <!-- Toast Notification Container -->
   <div id="toast"
     class="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50 hidden px-4 py-3 rounded-2xl glass-panel text-xs font-semibold shadow-2xl flex items-center gap-2.5 animate-fade-in border border-slate-300 dark:border-white/10">
-    <span id="toast-icon" class="flex items-center"><svg class="svg-icon w-4 h-4 text-brand-500" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg></span>
+    <span id="toast-icon" class="flex items-center"><svg class="svg-icon w-4 h-4 text-brand-500" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" x2="12" y1="16" y2="12" />
+        <line x1="12" x2="12.01" y1="8" y2="8" />
+      </svg></span>
     <span id="toast-msg">Notification message</span>
   </div>
 
@@ -2120,4 +2263,5 @@
   <!-- =============================================================== -->
   <script src="app.js"></script>
 </body>
+
 </html>
