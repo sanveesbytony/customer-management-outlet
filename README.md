@@ -1,6 +1,6 @@
-# POS2IN Customer Intelligence & Analytics Platform
+# Customer Management System
 
-A modern, high-performance, real-time Cloud Web Application designed specifically for **POS2IN** sales registers and multi-branch retail operations. Built as a standalone single-page application (SPA) deployable on **GitHub Pages** with a **Google Firebase Cloud** database backend for instant sub-50ms synchronization across all branches.
+A modern, high-performance, real-time Cloud Web Application designed specifically for **Customer Management**, POS sales registers, and multi-branch retail operations. Built as a standalone single-page application (SPA) deployable on **GitHub Pages** with a **Google Firebase Cloud** database backend for instant synchronization across all branches.
 
 ---
 
@@ -71,6 +71,21 @@ git push -u origin main
 ```
 
 Then enable GitHub Pages under repository **Settings** -> **Pages**.
+
+---
+
+## 🔐 Default Login Credentials
+
+| Role | Username / Branch | Default Password | Access Level |
+| :--- | :--- | :--- | :--- |
+| **Super Admin** | `admin` | `pos2in@admin2026` | Full Access: Dashboard, Customers, Import, Branch Manager, Delete Center, Cloud Settings |
+| **Main Branch** | `Main Branch` | `mainbranch19` | Dashboard (Filtered), Customer Directory |
+| **Dhanmondi Outlet** | `Dhanmondi Outlet` | `dhanmondioutlet24` | Dashboard (Filtered), Customer Directory |
+| **Gulshan Outlet** | `Gulshan Outlet` | `gulshanoutlet18` | Dashboard (Filtered), Customer Directory |
+| **Uttara Outlet** | `Uttara Outlet` | `uttaraoutlet35` | Dashboard (Filtered), Customer Directory |
+| **Online Store** | `Online Store` | `onlinestore99` | Dashboard (Filtered), Customer Directory |
+
+*Note: All branch passwords and admin credentials can be customized at any time in the **Settings** and **Branches** tabs.*
 
 ---
 

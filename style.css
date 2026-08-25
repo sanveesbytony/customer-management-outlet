@@ -11,7 +11,7 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Targeted Transitions for High Performance (avoids universal * reflows) */
+/* Targeted Transitions for High Performance */
 button,
 a,
 input,
@@ -44,7 +44,7 @@ select,
 }
 
 .dark ::-webkit-scrollbar-track {
-  background: #090d16;
+  background: #0b0f17;
 }
 
 .dark ::-webkit-scrollbar-thumb {
@@ -69,10 +69,10 @@ select,
   background: #94a3b8;
 }
 
-/* Dark Mode Styling */
+/* Dark Mode Styling (Rich Obsidian & Slate Titanium) */
 .dark body {
-  background: #090d16;
-  color: #f1f5f9;
+  background: #0b0f17;
+  color: #f8fafc;
 }
 
 .dark .glass-panel {
@@ -83,17 +83,17 @@ select,
 }
 
 .dark .glass-input {
-  background: #0d1424;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: #ffffff;
 }
 
 .dark .glass-input:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
-/* Light Mode Styling */
+/* Light Mode Styling (Crisp Executive Slate) */
 body {
   background: #f8fafc;
   color: #0f172a;
@@ -104,7 +104,7 @@ body {
 .glass-panel {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
 }
 
 .glass-input {
@@ -114,8 +114,8 @@ body {
 }
 
 .glass-input:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
 }
 
 /* Inline SVG utility */
@@ -136,7 +136,6 @@ body {
     opacity: 0;
     transform: translateY(4px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -145,4 +144,12 @@ body {
 
 .animate-fade-in {
   animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Micro animations */
+.hover-lift {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-1px);
 }

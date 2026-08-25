@@ -816,7 +816,7 @@ function switchLoginMode(mode) {
     onLoginBranchChanged();
   } else {
     if (tabAdmin) {
-      tabAdmin.className = 'py-2.5 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 text-white shadow flex items-center justify-center gap-1.5 cursor-pointer';
+      tabAdmin.className = 'py-2.5 rounded-xl text-xs font-bold transition-all bg-brand-600 text-white shadow flex items-center justify-center gap-1.5 cursor-pointer';
     }
     if (tabBranch) {
       tabBranch.className = 'py-2.5 rounded-xl text-xs font-bold transition-all text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center justify-center gap-1.5 cursor-pointer';
@@ -1135,7 +1135,7 @@ function updateAuthUI() {
     if (nameEl) nameEl.textContent = AppState.auth.username || 'Admin';
     if (roleIcon) roleIcon.innerHTML = '<svg class="svg-icon w-3.5 h-3.5 text-amber-500 inline" viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5 1 6.5L12 17l-5.5 3 1-6.5L3 9l6-1z"/></svg>';
     if (badge) {
-      badge.className = 'flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-500/15 border border-purple-500/30 text-purple-600 dark:text-purple-300 whitespace-nowrap flex-shrink-0';
+      badge.className = 'flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold bg-brand-500/15 border border-brand-500/30 text-brand-700 dark:text-brand-300 whitespace-nowrap flex-shrink-0';
     }
   } else {
     const branchName = AppState.auth.branch || 'Store';
@@ -1349,30 +1349,59 @@ function copyToClipboard(text, msg) {
  * THEME & NAVIGATION CONTROLLER
  * ===============================================================
  */
+function applyThemeVisuals(isDark) {
+  const favicon = document.getElementById('dynamic-favicon');
+  const headerLogo = document.getElementById('header-primary-logo');
+  const loginLogo = document.getElementById('login-modal-logo');
+  const targetLogo = isDark ? 'favicon dark.png' : 'favicon white.png';
+
+  if (favicon) favicon.href = targetLogo;
+  if (headerLogo) headerLogo.src = targetLogo;
+  if (loginLogo) loginLogo.src = targetLogo;
+
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+  if (sunIcon && moonIcon) {
+    if (isDark) {
+      sunIcon.classList.remove('hidden');
+      moonIcon.classList.add('hidden');
+    } else {
+      sunIcon.classList.add('hidden');
+      moonIcon.classList.remove('hidden');
+    }
+  }
+}
+
 function initTheme() {
   try {
     const saved = SafeStorage.getLocal('pos2in_theme');
-    if (saved === 'light') {
-      document.documentElement.classList.remove('dark');
-    } else {
+    const isDark = (saved !== 'light');
+    if (isDark) {
       document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
+    applyThemeVisuals(isDark);
   } catch (e) {
     document.documentElement.classList.add('dark');
+    applyThemeVisuals(true);
   }
 }
 
 function toggleTheme() {
   try {
-    if (document.documentElement.classList.contains('dark')) {
-      document.documentElement.classList.remove('dark');
-      SafeStorage.setLocal('pos2in_theme', 'light');
-      showToast('Light mode active', 'info');
-    } else {
+    const isCurrentlyDark = document.documentElement.classList.contains('dark');
+    const nextIsDark = !isCurrentlyDark;
+    if (nextIsDark) {
       document.documentElement.classList.add('dark');
       SafeStorage.setLocal('pos2in_theme', 'dark');
       showToast('Dark mode active', 'info');
+    } else {
+      document.documentElement.classList.remove('dark');
+      SafeStorage.setLocal('pos2in_theme', 'light');
+      showToast('Light mode active', 'info');
     }
+    applyThemeVisuals(nextIsDark);
   } catch (e) { }
 }
 
@@ -2081,14 +2110,14 @@ function renderDashboardCharts(invoices) {
         datasets: [{
           label: 'Daily Sales Revenue',
           data: chartData.length ? chartData : [0],
-          borderColor: '#6366f1',
-          backgroundColor: 'rgba(99, 102, 241, 0.15)',
+          borderColor: '#2563eb',
+          backgroundColor: 'rgba(37, 99, 235, 0.10)',
           borderWidth: 2.5,
           fill: true,
           tension: 0.35,
           pointRadius: isSinglePoint ? 6 : (chartData.length > 25 ? 2.5 : 4),
           pointHoverRadius: isSinglePoint ? 8 : 6,
-          pointBackgroundColor: '#6366f1',
+          pointBackgroundColor: '#2563eb',
           pointBorderColor: '#ffffff',
           pointBorderWidth: 1.5
         }]
@@ -2141,13 +2170,32 @@ function renderDashboardCharts(invoices) {
     });
   }
 
-  // 2. Branch Revenue Pie
+  // 2. Branch Revenue Pie (Vibrant, high-contrast, aesthetic palette)
   const branchLabels = Object.keys(branchRevenueMap);
   const branchData = Object.values(branchRevenueMap);
+  const totalBranchRev = branchData.reduce((a, b) => a + b, 0);
   const branchEmpty = document.getElementById('branch-empty-state');
   const branchCtx = document.getElementById('branchPieChart');
+  const isDark = (typeof document !== 'undefined' && document.documentElement && document.documentElement.classList && typeof document.documentElement.classList.contains === 'function') ? document.documentElement.classList.contains('dark') : true;
+  const ringBorder = isDark ? '#0f172a' : '#ffffff';
+
+  // Vibrant, cheerful, high-contrast palette (Sapphire, Amber Gold, Iris Violet, Emerald Mint, Coral Rose, Cyan, Orange, Indigo, Pink)
+  const branchColors = [
+    '#3b82f6', // Sapphire Blue
+    '#f59e0b', // Warm Amber Gold
+    '#8b5cf6', // Vibrant Iris Violet
+    '#10b981', // Fresh Mint Emerald
+    '#f43f5e', // Coral Rose
+    '#06b6d4', // Vivid Cyan
+    '#f97316', // Sunset Tangerine
+    '#6366f1', // Indigo
+    '#ec4899', // Bright Pink
+    '#14b8a6', // Teal
+    '#64748b'  // Slate
+  ];
+
   if (branchCtx) {
-    if (branchLabels.length === 0) {
+    if (branchLabels.length === 0 || totalBranchRev === 0) {
       if (branchEmpty) branchEmpty.classList.remove('hidden');
     } else {
       if (branchEmpty) branchEmpty.classList.add('hidden');
@@ -2160,19 +2208,43 @@ function renderDashboardCharts(invoices) {
         labels: branchLabels.length ? branchLabels : ['No Data'],
         datasets: [{
           data: branchData.length ? branchData : [1],
-          backgroundColor: ['#6366f1', '#a855f7', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'],
-          borderWidth: 0
+          backgroundColor: branchColors.slice(0, Math.max(branchLabels.length, 1)),
+          borderWidth: 2.5,
+          borderColor: ringBorder,
+          hoverOffset: 6
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        cutout: '66%',
         plugins: {
-          legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+          legend: {
+            position: 'bottom',
+            labels: {
+              boxWidth: 8,
+              boxHeight: 8,
+              usePointStyle: true,
+              pointStyle: 'circle',
+              padding: 12,
+              font: { size: 11, family: "'Plus Jakarta Sans', sans-serif", weight: '600' },
+              color: isDark ? '#94a3b8' : '#475569'
+            }
+          },
           tooltip: {
+            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+            titleColor: '#ffffff',
+            bodyColor: '#e0e7ff',
+            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderWidth: 1,
+            padding: 10,
+            boxPadding: 4,
+            usePointStyle: true,
             callbacks: {
               label: function(context) {
-                return ` ${context.label}: ${curr} ${formatNumber(context.raw)}`;
+                const val = context.raw || 0;
+                const pct = totalBranchRev > 0 ? ((val / totalBranchRev) * 100).toFixed(1) : 0;
+                return ` ${context.label}: ${curr} ${formatNumber(val)} (${pct}%)`;
               }
             }
           }
@@ -2227,15 +2299,46 @@ function renderDashboardCharts(invoices) {
             tierCounts['At-Risk / Inactive'],
             tierCounts['Regular Customer']
           ],
-          backgroundColor: ['#f59e0b', '#6366f1', '#10b981', '#ef4444', '#64748b'],
-          borderWidth: 0
+          backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#f43f5e', '#64748b'],
+          borderWidth: 2.5,
+          borderColor: ringBorder,
+          hoverOffset: 6
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        cutout: '66%',
         plugins: {
-          legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+          legend: {
+            position: 'bottom',
+            labels: {
+              boxWidth: 8,
+              boxHeight: 8,
+              usePointStyle: true,
+              pointStyle: 'circle',
+              padding: 12,
+              font: { size: 11, family: "'Plus Jakarta Sans', sans-serif", weight: '600' },
+              color: isDark ? '#94a3b8' : '#475569'
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+            titleColor: '#ffffff',
+            bodyColor: '#e0e7ff',
+            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderWidth: 1,
+            padding: 10,
+            boxPadding: 4,
+            usePointStyle: true,
+            callbacks: {
+              label: function(context) {
+                const val = context.raw || 0;
+                const pct = totalSegs > 0 ? ((val / totalSegs) * 100).toFixed(1) : 0;
+                return ` ${context.label}: ${val} customers (${pct}%)`;
+              }
+            }
+          }
         }
       }
     });
@@ -2884,15 +2987,15 @@ function renderCustomerList() {
     function getTierBadgeHtml(tier) {
   const t = tier || 'New Customer';
   if (t.includes('VIP')) {
-    return `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 flex items-center gap-1.5 w-fit"><svg class="w-3 h-3 text-amber-500 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>${escapeHtml(t)}</span></span>`;
+    return `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-800 dark:text-amber-300 border border-amber-500/30 flex items-center gap-1.5 w-fit"><svg class="w-3 h-3 text-amber-600 dark:text-amber-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>${escapeHtml(t)}</span></span>`;
   } else if (t.includes('Regular')) {
-    return `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 flex items-center gap-1.5 w-fit"><svg class="w-3 h-3 text-indigo-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg><span>${escapeHtml(t)}</span></span>`;
+    return `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/10 text-blue-800 dark:text-blue-300 border border-blue-500/30 flex items-center gap-1.5 w-fit"><svg class="w-3 h-3 text-blue-600 dark:text-blue-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg><span>${escapeHtml(t)}</span></span>`;
   } else if (t.includes('New')) {
-    return `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 w-fit"><svg class="w-3 h-3 text-emerald-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x1="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg><span>${escapeHtml(t)}</span></span>`;
+    return `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 w-fit"><svg class="w-3 h-3 text-emerald-600 dark:text-emerald-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x1="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg><span>${escapeHtml(t)}</span></span>`;
   } else if (t.includes('At-Risk') || t.includes('Inactive') || t.includes('Dormant')) {
-    return `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30 flex items-center gap-1.5 w-fit"><svg class="w-3 h-3 text-rose-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg><span>${escapeHtml(t)}</span></span>`;
+    return `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-rose-500/10 text-rose-800 dark:text-rose-300 border border-rose-500/30 flex items-center gap-1.5 w-fit"><svg class="w-3 h-3 text-rose-600 dark:text-rose-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg><span>${escapeHtml(t)}</span></span>`;
   }
-  return `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-gray-500/15 text-gray-700 dark:text-gray-300 border border-gray-500/30 flex items-center gap-1.5 w-fit"><svg class="w-3 h-3 text-gray-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span>${escapeHtml(t)}</span></span>`;
+  return `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-500/10 text-slate-800 dark:text-slate-300 border border-slate-500/30 flex items-center gap-1.5 w-fit"><svg class="w-3 h-3 text-slate-500 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span>${escapeHtml(t)}</span></span>`;
 }
 
 function openCustomerModal(encodedKey) {
