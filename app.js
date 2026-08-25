@@ -18,6 +18,57 @@ const SafeStorage = {
 };
 window.SafeStorage = SafeStorage;
 
+// High-Capacity Persistent Local Cache (IndexedDB for instant 0ms app & admin load)
+const Pos2inLocalCache = {
+  dbPromise: null,
+  getDB: function () {
+    if (!this.dbPromise) {
+      this.dbPromise = new Promise((resolve) => {
+        if (typeof indexedDB === 'undefined') return resolve(null);
+        try {
+          const req = indexedDB.open('pos2in_local_store_v1', 1);
+          req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('cache')) {
+              db.createObjectStore('cache');
+            }
+          };
+          req.onsuccess = (e) => resolve(e.target.result);
+          req.onerror = () => resolve(null);
+        } catch (e) {
+          resolve(null);
+        }
+      });
+    }
+    return this.dbPromise;
+  },
+  get: async function (key) {
+    try {
+      const db = await this.getDB();
+      if (!db) return null;
+      return new Promise((resolve) => {
+        const tx = db.transaction('cache', 'readonly');
+        const store = tx.objectStore('cache');
+        const req = store.get(key);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => resolve(null);
+      });
+    } catch (e) {
+      return null;
+    }
+  },
+  set: async function (key, value) {
+    try {
+      const db = await this.getDB();
+      if (!db) return;
+      const tx = db.transaction('cache', 'readwrite');
+      const store = tx.objectStore('cache');
+      store.put(value, key);
+    } catch (e) { }
+  }
+};
+window.Pos2inLocalCache = Pos2inLocalCache;
+
 const DEFAULT_SETTINGS = {
   branches: ['Main Branch', 'Dhanmondi Outlet', 'Gulshan Outlet', 'Uttara Outlet', 'Online Store'],
   branchPasswords: {
@@ -197,6 +248,7 @@ const FirebaseEngine = {
         const data = await resp.json();
         if (data && typeof data === 'object') {
           AppState.settings = Object.assign({}, DEFAULT_SETTINGS, data);
+          Pos2inLocalCache.set('settings', AppState.settings);
           if (!AppState.settings.adminConfig) {
             AppState.settings.adminConfig = Object.assign({}, DEFAULT_SETTINGS.adminConfig);
             this.saveSettingsDoc(AppState.settings);
@@ -233,6 +285,7 @@ const FirebaseEngine = {
         const data = await resp.json();
         if (data && typeof data === 'object') {
           AppState.customers = data;
+          Pos2inLocalCache.set('customers', data);
           recalculateAllCustomerMetrics(AppState.customers, AppState.settings);
           onDataLoaded();
 
@@ -257,6 +310,7 @@ const FirebaseEngine = {
           const loaded = snapshot.val() || {};
           if (Object.keys(loaded).length > 0) {
             AppState.customers = loaded;
+            Pos2inLocalCache.set('customers', loaded);
             recalculateAllCustomerMetrics(AppState.customers, AppState.settings);
             onDataLoaded();
 
@@ -655,7 +709,7 @@ function getActiveBranches() {
  * STARTUP LIFECYCLE & AUTHENTICATION ENGINE
  * ===============================================================
  */
-function initApp() {
+async function initApp() {
   initTheme();
   initDateInputs();
 
@@ -666,14 +720,31 @@ function initApp() {
   // 2. Initialize Authentication
   initAuth();
 
-  // 3. Initialize Firebase Cloud Connection in non-blocking background
+  // 3. Instant Cache Hydration (0ms local startup without waiting for network roundtrip)
+  try {
+    const cachedSettings = await Pos2inLocalCache.get('settings');
+    if (cachedSettings && typeof cachedSettings === 'object') {
+      AppState.settings = Object.assign({}, DEFAULT_SETTINGS, cachedSettings);
+      populateBranchDropdowns();
+      syncSettingsToInputs();
+    }
+
+    const cachedCustomers = await Pos2inLocalCache.get('customers');
+    if (cachedCustomers && typeof cachedCustomers === 'object' && Object.keys(cachedCustomers).length > 0) {
+      AppState.customers = cachedCustomers;
+      recalculateAllCustomerMetrics(AppState.customers, AppState.settings);
+      onDataLoaded();
+    }
+  } catch (e) { }
+
+  // 4. Initialize Firebase Cloud Connection in non-blocking background
   try {
     FirebaseEngine.init();
   } catch (e) {
     console.warn('FirebaseEngine non-blocking init warning:', e);
   }
 
-  // Initial local render
+  // Initial render
   onDataLoaded();
 }
 
@@ -893,11 +964,23 @@ async function handleBranchLoginSubmit() {
     SafeStorage.setItem('pos2in_auth', JSON.stringify(AppState.auth));
     showToast(`Logged in successfully as ${branchName}!`, 'success');
     if (pwInput) pwInput.value = '';
+
+    // Set branch filters
+    AppState.filters.branch = branchName;
+    AppState.filters.customerBranch = branchName;
+
+    // 1. Hide login overlay first
+    hideLoginScreen();
+
+    // 2. Update navigation & dropdowns
     updateAuthUI();
     populateBranchDropdowns();
-    applyDashboardFilters();
-    renderCustomerList();
-    hideLoginScreen();
+
+    // 3. Render immediately and repaint charts
+    onDataLoaded();
+    setTimeout(() => {
+      onDataLoaded();
+    }, 60);
 
     const impBranch = document.getElementById('import-branch-select');
     if (impBranch) impBranch.value = branchName;
@@ -960,11 +1043,36 @@ function handleAdminLoginSubmit() {
     SafeStorage.setItem('pos2in_auth', JSON.stringify(AppState.auth));
     showToast('Admin authenticated successfully! Full privileges granted.', 'success');
     if (pwInput) pwInput.value = '';
+
+    // Reset admin filters to ALL
+    AppState.filters.branch = 'ALL';
+    AppState.filters.customerBranch = 'ALL';
+    const dashBranch = document.getElementById('filter-dashboard-branch');
+    if (dashBranch) dashBranch.value = 'ALL';
+    const custBranch = document.getElementById('filter-customer-branch');
+    if (custBranch) custBranch.value = 'ALL';
+
+    // 1. Hide login overlay first so viewport layout dimensions are active
+    hideLoginScreen();
+
+    // 2. Update navigation, privileges & branch dropdowns
     updateAuthUI();
     populateBranchDropdowns();
-    applyDashboardFilters();
-    renderCustomerList();
-    hideLoginScreen();
+
+    // 3. Render immediately and schedule chart repaint after layout transition
+    onDataLoaded();
+    setTimeout(() => {
+      onDataLoaded();
+    }, 60);
+
+    // 4. If data is still loading from cloud, trigger immediate fetch
+    if (!AppState.customers || Object.keys(AppState.customers).length === 0) {
+      setSyncStatus('syncing', 'Synchronizing with Firebase Cloud...');
+      FirebaseEngine.fetchInitialDataRest().then(() => {
+        onDataLoaded();
+      });
+    }
+
     loadBranchSecurityData();
   } else {
     showToast('Invalid admin username or password', 'error');
@@ -1905,66 +2013,128 @@ function renderDashboardCharts(invoices) {
     console.warn('Chart.js library not loaded yet, skipping chart render.');
     return;
   }
-  // 1. Daily / Monthly Revenue Trend
+  
+  // 1. Intelligent Daily / Monthly Revenue Progression
+  const dailyMap = {};
   const monthMap = {};
   const branchRevenueMap = {};
 
-  invoices.forEach(inv => {
+  (invoices || []).forEach(inv => {
     if (inv.date) {
-      const monthKey = inv.date.slice(0, 7);
-      monthMap[monthKey] = (monthMap[monthKey] || 0) + inv.amount;
+      const dStr = inv.date.slice(0, 10);
+      dailyMap[dStr] = (dailyMap[dStr] || 0) + inv.amount;
+      const mStr = inv.date.slice(0, 7);
+      monthMap[mStr] = (monthMap[mStr] || 0) + inv.amount;
     }
     const br = inv.branch || 'Other';
     branchRevenueMap[br] = (branchRevenueMap[br] || 0) + inv.amount;
   });
 
-  const sortedMonths = Object.keys(monthMap).sort();
-  const monthLabels = sortedMonths.map(m => {
-    const [y, mo] = m.split('-');
-    const names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return `${names[parseInt(mo, 10) - 1]} '${y.slice(2)}`;
-  });
-  const monthData = sortedMonths.map(m => monthMap[m]);
+  const sortedDailyKeys = Object.keys(dailyMap).sort();
+  const sortedMonthKeys = Object.keys(monthMap).sort();
 
+  // If there are <= 60 distinct days, or if data spans <= 3 months, use Daily grouping to show rich day-by-day progression curve!
+  let chartLabels = [];
+  let chartData = [];
+
+  const useDaily = (sortedDailyKeys.length <= 60) || (sortedMonthKeys.length <= 3);
+
+  if (useDaily && sortedDailyKeys.length > 0) {
+    chartLabels = sortedDailyKeys.map(d => {
+      const parts = d.split('-');
+      if (parts.length === 3) {
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const mIdx = parseInt(parts[1], 10) - 1;
+        return `${parseInt(parts[2], 10)} ${months[mIdx] || ''}`;
+      }
+      return d;
+    });
+    chartData = sortedDailyKeys.map(d => Math.round(dailyMap[d]));
+  } else if (sortedMonthKeys.length > 0) {
+    chartLabels = sortedMonthKeys.map(m => {
+      const [y, mo] = m.split('-');
+      const names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return `${names[parseInt(mo, 10) - 1]} '${y.slice(2)}`;
+    });
+    chartData = sortedMonthKeys.map(m => Math.round(monthMap[m]));
+  }
+
+  const curr = (AppState.settings && AppState.settings.currencySymbol) ? AppState.settings.currencySymbol : '৳';
   const trendEmpty = document.getElementById('trend-empty-state');
   const salesCtx = document.getElementById('salesTrendChart');
+
   if (salesCtx) {
-    if (invoices.length === 0) {
+    if (!invoices || invoices.length === 0 || chartData.length === 0) {
       if (trendEmpty) trendEmpty.classList.remove('hidden');
     } else {
       if (trendEmpty) trendEmpty.classList.add('hidden');
     }
 
     if (AppState.charts.salesTrend) AppState.charts.salesTrend.destroy();
+
+    const isSinglePoint = (chartData.length === 1);
+
     AppState.charts.salesTrend = new Chart(salesCtx, {
       type: 'line',
       data: {
-        labels: monthLabels.length ? monthLabels : ['No Data'],
+        labels: chartLabels.length ? chartLabels : ['No Data'],
         datasets: [{
-          label: 'Sales Revenue',
-          data: monthData.length ? monthData : [0],
+          label: 'Daily Sales Revenue',
+          data: chartData.length ? chartData : [0],
           borderColor: '#6366f1',
           backgroundColor: 'rgba(99, 102, 241, 0.15)',
-          borderWidth: 3,
+          borderWidth: 2.5,
           fill: true,
           tension: 0.35,
-          pointRadius: 4,
-          pointHoverRadius: 6
+          pointRadius: isSinglePoint ? 6 : (chartData.length > 25 ? 2.5 : 4),
+          pointHoverRadius: isSinglePoint ? 8 : 6,
+          pointBackgroundColor: '#6366f1',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 1.5
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { display: false }
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+            titleColor: '#ffffff',
+            bodyColor: '#e0e7ff',
+            borderColor: 'rgba(99, 102, 241, 0.3)',
+            borderWidth: 1,
+            padding: 10,
+            boxPadding: 4,
+            usePointStyle: true,
+            callbacks: {
+              label: function(context) {
+                return ` Daily Revenue: ${curr} ${formatNumber(context.raw)}`;
+              }
+            }
+          }
         },
         scales: {
           y: {
             beginAtZero: true,
-            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+            grid: { color: 'rgba(255, 255, 255, 0.06)' },
+            ticks: {
+              font: { size: 10 },
+              callback: function(val) {
+                if (val >= 1000000) return `${curr} ${(val / 1000000).toFixed(1)}M`;
+                if (val >= 1000) return `${curr} ${(val / 1000).toFixed(0)}k`;
+                return `${curr} ${val}`;
+              }
+            }
           },
           x: {
-            grid: { display: false }
+            grid: { display: false },
+            ticks: {
+              font: { size: 10 },
+              maxRotation: 45,
+              autoSkip: true,
+              maxTicksLimit: 16
+            }
           }
         }
       }
@@ -1998,7 +2168,14 @@ function renderDashboardCharts(invoices) {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+          legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return ` ${context.label}: ${curr} ${formatNumber(context.raw)}`;
+              }
+            }
+          }
         }
       }
     });

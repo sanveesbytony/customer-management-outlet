@@ -204,7 +204,7 @@
           <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">Admin
             Username / Email</label>
           <div class="relative">
-            <input type="text" id="login-admin-username" placeholder="e.g. admin or admin@pos2in.com" value="admin"
+            <input type="text" id="login-admin-username" placeholder="Enter admin username or email..." value=""
               autocomplete="username"
               class="glass-input w-full py-2.5 pl-10 pr-4 rounded-xl text-xs font-bold placeholder-gray-400 text-gray-900 dark:text-white">
             <svg class="svg-icon w-4 h-4 text-purple-500 absolute left-3.5 top-3.5" viewBox="0 0 24 24">
@@ -236,11 +236,6 @@
               </svg>
             </button>
           </div>
-        </div>
-
-        <div class="flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400 px-1">
-          <span>Default: <span class="font-mono font-bold text-purple-600 dark:text-purple-300">admin</span> / <span
-              class="font-mono font-bold text-purple-600 dark:text-purple-300">pos2in@admin2026</span></span>
         </div>
 
         <button type="submit" id="btn-admin-login-submit"
@@ -1726,10 +1721,9 @@
             </div>
 
             <div class="md:col-span-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
-              <span class="text-[11px] text-gray-500 dark:text-gray-400">
-                Default master credentials: <code
-                  class="font-mono text-purple-600 dark:text-purple-300 font-bold">admin</code> / <code
-                  class="font-mono text-purple-600 dark:text-purple-300 font-bold">pos2in@admin2026</code>
+              <span class="text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+                <svg class="svg-icon w-3.5 h-3.5 text-purple-500" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span>Master credentials are encrypted and stored in Firebase Cloud.</span>
               </span>
               <button type="submit"
                 class="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-95 text-white flex items-center gap-2 shadow-md shadow-purple-500/25">
