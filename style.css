@@ -11,9 +11,30 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Theme Transition */
-* {
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+/* Targeted Transitions for High Performance (avoids universal * reflows) */
+button,
+a,
+input,
+select,
+.nav-tab,
+.glass-panel,
+.glass-input,
+.tier-filter-chip,
+.date-preset-btn,
+.cust-date-preset-btn,
+.mobile-nav-btn {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+/* Layout Containment for Large Data Lists */
+#customer-cards-container,
+#customer-table-container {
+  contain: content;
+}
+
+.glass-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 140px;
 }
 
 /* Scrollbars */
