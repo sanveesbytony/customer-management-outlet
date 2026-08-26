@@ -1537,12 +1537,12 @@ function recalculateAllCustomerMetrics(customers, settings) {
 
     if (totalSpend >= vipThresh) {
       c.tier = 'VIP Champion';
-    } else if (totalSpend >= regThresh || c.totalVisits >= 3) {
-      c.tier = 'Loyal Regular';
-    } else if (c.totalVisits === 1 && daysSinceLast <= 30) {
+    } else if (c.totalVisits <= 1) {
       c.tier = 'New Customer';
-    } else if (daysSinceLast > inactDays && c.totalVisits > 0) {
+    } else if (daysSinceLast > inactDays && c.totalVisits > 1) {
       c.tier = 'At-Risk / Inactive';
+    } else if (totalSpend >= regThresh || c.totalVisits >= 2) {
+      c.tier = 'Loyal Regular';
     } else {
       c.tier = 'Regular Customer';
     }
@@ -1591,12 +1591,14 @@ function getScopedCustomerData(cust, targetBranch) {
   let tier = 'Regular Customer';
   if (totalSpend >= vipThresh) {
     tier = 'VIP Champion';
-  } else if (totalSpend >= regThresh || totalVisits >= 3) {
-    tier = 'Loyal Regular';
-  } else if (totalVisits === 1 && daysSinceLast <= 30) {
+  } else if (totalVisits <= 1) {
     tier = 'New Customer';
-  } else if (daysSinceLast > inactDays && totalVisits > 0) {
+  } else if (daysSinceLast > inactDays && totalVisits > 1) {
     tier = 'At-Risk / Inactive';
+  } else if (totalSpend >= regThresh || totalVisits >= 2) {
+    tier = 'Loyal Regular';
+  } else {
+    tier = 'Regular Customer';
   }
 
   return {
@@ -2717,7 +2719,7 @@ function renderCustomerList() {
       const isAdmin = AppState.auth && AppState.auth.role === 'admin';
       let selectedBranch = 'ALL';
       if (isAdmin) {
-        selectedBranch = (branchSel && branchSel.value) ? branchSel.value : 'ALL';
+        selectedBranch = (branchSel && branchSel.value && branchSel.value.trim() !== '') ? branchSel.value : 'ALL';
       } else if (AppState.auth && AppState.auth.branch) {
         selectedBranch = AppState.auth.branch;
         if (branchSel) {
@@ -2746,9 +2748,9 @@ function renderCustomerList() {
       for (let i = 0; i < branchCustomers.length; i++) {
         const t = branchCustomers[i].tier || '';
         if (t.includes('VIP')) vipC++;
-        else if (t.includes('Loyal Regular') || t.includes('Regular')) regC++;
-        else if (t.includes('New Customer') || t.includes('New')) newC++;
+        else if (t.includes('New')) newC++;
         else if (t.includes('At-Risk') || t.includes('Inactive')) atRiskC++;
+        else if (t.includes('Regular')) regC++;
       }
 
       const countAll = document.getElementById('count-tier-all');
@@ -2769,9 +2771,9 @@ function renderCustomerList() {
       let filtered = branchCustomers.filter(c => {
         if (tierFilter !== 'ALL') {
           if (tierFilter === 'VIP' && !c.tier.includes('VIP')) return false;
-          if (tierFilter === 'REGULAR' && !c.tier.includes('Regular')) return false;
           if (tierFilter === 'NEW' && !c.tier.includes('New')) return false;
           if (tierFilter === 'AT_RISK' && (!c.tier.includes('At-Risk') && !c.tier.includes('Inactive'))) return false;
+          if (tierFilter === 'REGULAR' && (!c.tier.includes('Regular') || c.tier.includes('New'))) return false;
         }
 
         if (startDate || endDate) {
